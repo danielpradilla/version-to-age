@@ -18,7 +18,7 @@ class UApolice {
    */
   const FILEPREFIX   = 'UAPOLICE_';
 
-  const URLGITSERIAL = 'https://github.com/peterkahl/user-agent-police/src/data.serial';
+  const URLGITSERIAL = 'https://github.com/peterkahl/UApolice/src/data.serial';
 
   /**
    * Path of cache directory.
@@ -62,10 +62,24 @@ class UApolice {
     }
     #----------------------------------
     # Fetch from GitHub
-    #......
-    $this->browsers   = $browsers;
-    $this->osystems   = $osystems;
-    $this->epoch      = $epoch;
+    $curlm = new curlMaster;
+    $curlm->CacheDir = $this->CacheDir;
+    $curlm->ForcedCacheMaxAge = -1;
+
+    $answer   = $curlm->Request(self::URLGITSERIAL);
+
+    $body     = $answer['body'];
+    $status   = $answer['status'];
+    $error    = $answer['error'];
+
+    unset($answer);
+    
+    if ($status == '200' && !empty($body)) {
+      $data = unserialize($body);
+      $this->browsers = $data['browsers'];
+      $this->osystems = $data['osystems'];
+      $this->epoch    = $data['epoch'];
+    }
     #----------------------------------
     
 
