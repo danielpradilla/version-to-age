@@ -48,32 +48,33 @@ class UserAgentPolice {
     $timestamp = 0;
     $browsers  = array();
     $osystems  = array();
+    #----------------------------------
+    # Local cache
+    $CacheFile = $CacheDir .'/UAP_data.serial';
+    if (file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
+      $data = unserialize(file_get_contents($CacheFile));
+      $this->browsers = $data['browsers'];
+      $this->osystems = $data['osystems'];
+      $this->epoch    = $data['epoch'];
+      return;
+    }
+
+    # Fetch from external sources
+    $this->browsers = $this->GetBrowserInfoAll();
+    $data = array();
+    $data['browsers'] = $this->browsers;
+    $data['osystems'] = $this->osystems;
+    $data['epoch']    = time();
+    file_put_contents($CacheFile, serialize($data));
+
+    #----------------------------------
     if (file_exists(__DIR__ .'/data.php')) {
       require __DIR__ .'/data.php';
-      $this->browsers = $browsers;
-      $this->osystems = $osystems;
-      $this->epoch    = $timestamp;
     }
-    #--------------------------------
-    if (time()-86400 < $timestamp) {
-      # Local cache
-      $CacheFile = $CacheDir .'/UAP_data.serial';
-      if (file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
-        $data = unserialize(file_get_contents($CacheFile));
-        $this->browsers = $data['br'];
-        $this->osystems = $data['os'];
-        $this->epoch    = $data['tm'];
-      }
-      else {
-        # Fetch from external sources
-        $this->browsers = $this->GetBrowserInfoAll();
-        $data = array();
-        $data['br'] = $this->browsers;
-        $data['os'] = $this->osystems;
-        $data['tm'] = time();
-        file_put_contents($CacheFile, serialize($data));
-      }
-    }
+    #----------------------------------
+    $this->browsers = $browsers;
+    $this->osystems = $osystems;
+    $this->epoch    = $timestamp;
   }
 
   #===================================================================
