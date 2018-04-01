@@ -82,22 +82,17 @@ class UApolice {
     }
     #----------------------------------
     # Latest browser data
-    $this->GetBrowserInfoAll();
-    #----------------------------------
-    if (!file_exists(__DIR__ .'/data.php')) {
-      throw new Exception('Required file does not exist');
+    if ($this->GetBrowserInfoAll()) {
+      $data['browsers'] = $this->browsers;
+      $data['epoch']    = time();
+      file_put_contents($CacheFile, serialize($data));
+      return;
     }
-      
+    #----------------------------------
     require __DIR__ .'/data.php';
-
     $this->browsers   = $browsers;
     $this->osystems   = $osystems;
     $this->epoch      = $epoch;
-    $data = array();
-    $data['browsers'] = $browsers;
-    $data['osystems'] = $osystems;
-    $data['epoch']    = $epoch;
-    file_put_contents($CacheFile, serialize($data));
   }
 
   #===================================================================
