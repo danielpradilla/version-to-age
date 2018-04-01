@@ -16,9 +16,9 @@ class UApolice {
    * Filename prefix for cache files.
    * @var string
    */
-  const FILEPREFIX   = 'UAPOLICE_';
+  const FILEPREFIX = 'UAPOLICE_';
 
-  const URLGITSERIAL = 'https://github.com/peterkahl/UApolice/src/data.serial';
+  const URLGITJSON = 'https://github.com/peterkahl/UApolice/src/data.json';
 
   /**
    * Path of cache directory.
@@ -54,9 +54,9 @@ class UApolice {
     $osystems = array();
     #----------------------------------
     # Local cache
-    $CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.serial';
+    $CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
     if (file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
-      $data = unserialize(file_get_contents($CacheFile));
+      $data = json_decode(file_get_contents($CacheFile), true);
       $this->browsers = $data['browsers'];
       $this->osystems = $data['osystems'];
       $this->epoch    = $data['epoch'];
@@ -69,7 +69,7 @@ class UApolice {
     $curlm->ca_file  = $this->CAbundle;
     $curlm->ForcedCacheMaxAge = 86400;
 
-    $answer   = $curlm->Request(self::URLGITSERIAL);
+    $answer   = $curlm->Request(self::URLGITJSON);
 
     $body     = $answer['body'];
     $status   = $answer['status'];
@@ -78,7 +78,7 @@ class UApolice {
     unset($answer);
     
     if ($status == '200' && !empty($body)) {
-      $data = unserialize($body);
+      $data = json_decode($body, true);
       $this->browsers = $data['browsers'];
       $this->osystems = $data['osystems'];
       $this->epoch    = $data['epoch'];
@@ -88,7 +88,7 @@ class UApolice {
     if ($this->GetBrowserInfoAll()) {
       $data['browsers'] = $this->browsers;
       $data['epoch']    = time();
-      file_put_contents($CacheFile, serialize($data));
+      file_put_contents($CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE));
       return;
     }
     #----------------------------------
