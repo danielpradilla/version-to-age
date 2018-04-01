@@ -18,13 +18,20 @@ class UserAgentPolice {
    */
   const CLASSNAME = __CLASS__;
 
-  const DAYSCHECK = 30; # Check every X days
+  /**
+   * Maximum age of our data.
+   * @var integer
+   */
+  public $DaysCheck = 30;
 
-  const CHECK_DISABLED = true;
+  public $CheckDisabled = true;
+
+  public $CacheDir;
+
+  public $FetchRemoteData = true;
 
   /**
    * Most recent version of browsers.
-   * https://en.wikipedia.org/wiki/Timeline_of_web_browsers
    * @var array
    */
   private $browsers;
@@ -38,12 +45,26 @@ class UserAgentPolice {
   #===================================================================
   
   public function __construct() {
+    $timestamp = 0;
+    $browsers  = array();
+    $osystems  = array();
     if (file_exists(__DIR__ .'/data.php')) {
       require __DIR__ .'/data.php';
+      $this->browsers = $browsers;
+      $this->osystems = $osystems;
+      $this->updated  = $timestamp;
     }
-    $this->browsers = $browsers;
-    $this->osystems = $osystems;
-    $this->updated  = $timestamp;8
+    #--------------------------------
+    if (time()-86400 < $timestamp) {
+      # Local cache
+      $CacheFile = $CacheDir .'/UAP_data.serial';
+      if (file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
+        require $CacheFile;
+      }
+      else {
+        # Fetch from external sources
+      }
+    }
   }
 
   #===================================================================
