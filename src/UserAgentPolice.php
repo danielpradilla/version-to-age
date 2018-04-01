@@ -327,14 +327,14 @@ class UserAgentPolice {
 
   public static function getLatestVersionChrome($force = false) {
 
-    $filename = PATH_ABS_CACHE_SHARED .'/'. $this->FilePrefix .'VER_CHROME_STABLE.serial';
+    $filename = $this->CacheDir .'/'. $this->FilePrefix .'VER_CHROME_STABLE.serial';
 
     if (!$force && file_exists($filename) && filemtime($filename) > time() - 3700) {
       return unserialize(FileGetContents($filename));
     }
 
     $curlm = new curlMaster;
-    $curlm->CacheDir = self::DIRCACHE;
+    $curlm->CacheDir = $this->CacheDir;
     $curlm->ForcedCacheMaxAge = -1;
 
     $answer   = $curlm->Request('http://omahaproxy.appspot.com/all'); # CSV file
@@ -345,46 +345,52 @@ class UserAgentPolice {
 
     unset($answer);
 
-    if ($status != '200') {
-      throw new Exception('HTTP request failed with status '. $status .' '. $error);
-    }
+    if ($status == '200') {
 
-    $body = str_replace("\r\n", "\n", $body);
-    $body = str_replace("\r", "\n", $body);
-    $body = preg_replace("/\n\n+/", "\n", $body);
-    $body = explode("\n", $body);
+      $body = str_replace("\r\n", "\n", $body);
+      $body = str_replace("\r", "\n", $body);
+      $body = preg_replace("/\n\n+/", "\n", $body);
+      $body = explode("\n", $body);
 
-    # os,channel,current_version,previous_version,current_reldate,previous_reldate,branch_base_commit,branch_base_position,branch_commit,true_branch,v8_version
-    # mac,stable,62.0.3202.89,62.0.3202.75,11/06/17,10/26/17,fa6a5d87adff761bc16afc5498c3f5944c1daa68,499098,ba7a0041073a5e9928d277806bfe24c325d113e5,3202,6.2.414.40
-    # 0     1         2            3          4         5
+      # os,channel,current_version,previous_version,current_reldate,previous_reldate,branch_base_commit,branch_base_position,branch_commit,true_branch,v8_version
+      # mac,stable,62.0.3202.89,62.0.3202.75,11/06/17,10/26/17,fa6a5d87adff761bc16afc5498c3f5944c1daa68,499098,ba7a0041073a5e9928d277806bfe24c325d113e5,3202,6.2.414.40
+      # 0     1         2            3          4         5
 
-    foreach ($body as $line) {
-      if (substr($line, 0, 10) == 'mac,stable') {
-        $temp = explode(',', $line);
+      foreach ($body as $line) {
+        if (substr($line, 0, 10) == 'mac,stable') {
+          $temp = explode(',', $line);
+        }
       }
+
+      if (!isset($temp)) {
+        throw new Exception('Unable to find line starting with "mac,stable"');
+      }
+
+      list($month, $day, $year) = explode('/', $temp[4]);
+
+      $arr = array(
+        'version'    => $temp[2],
+        'released'   => strtotime('20'. $year .'-'. $month .'-'. $day.' 00:00:00 GMT'),
+        'last_check' => time(),
+      );
+
+      FilePutContents($filename, serialize($arr), LOCK_EX);
+      return $arr;
     }
 
-    if (!isset($temp)) {
-      throw new Exception('Unable to find line starting with "mac,stable"');
+    # Try using the aged cache file
+    if (file_exists($filename)) {
+      return unserialize(FileGetContents($filename));
     }
 
-    list($month, $day, $year) = explode('/', $temp[4]);
-
-    $arr = array(
-      'version'    => $temp[2],
-      'released'   => strtotime('20'. $year .'-'. $month .'-'. $day.' 00:00:00 GMT'),
-      'last_check' => time(),
-    );
-
-    FilePutContents($filename, serialize($arr), LOCK_EX);
-    return $arr;
+    return array();
   }
 
   #===================================================================
 
   public static function getLatestVersionFirefox($force = false) {
 
-    $filename = PATH_ABS_CACHE_SHARED .'/'. $this->FilePrefix .'VER_FIREFOX_STABLE.serial';
+    $filename = $this->CacheDir .'/'. $this->FilePrefix .'VER_FIREFOX_STABLE.serial';
 
     if (!$force && file_exists($filename) && filemtime($filename) > time() - 3700) {
       return unserialize(FileGetContents($filename));
