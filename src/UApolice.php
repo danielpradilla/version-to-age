@@ -81,8 +81,8 @@ class UApolice {
       $this->epoch    = $data['epoch'];
     }
     #----------------------------------
-    
-
+    # Latest browser data
+    $this->GetBrowserInfoAll();
     #----------------------------------
     if (!file_exists(__DIR__ .'/data.php')) {
       throw new Exception('Required file does not exist');
@@ -119,7 +119,8 @@ class UApolice {
       'firefox' => $fox['version'],
     );
 
-    return array_merge($this->$browsers, $extra);
+    $this->browsers = array_merge($this->browsers, $extra);
+    return $this->browsers;
   }
 
   #===================================================================
