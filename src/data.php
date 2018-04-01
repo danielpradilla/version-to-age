@@ -1,7 +1,7 @@
 <?php
 /**
- * Timestamp when this date were updated.
- * @var string
+ * Timestamp when this data were updated.
+ * @var integer
  */
 $timestamp = 1513032357; # Tuesday, 12 December 2017 06:45:57 GMT+08:00
 
