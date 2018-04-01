@@ -17,6 +17,8 @@ class UserAgentPolice {
    * @var string
    */
   const CLASSNAME = __CLASS__;
+  
+  const FILEPREFIX = 'UAPOLICE_';
 
   /**
    * Maximum age of our data.
@@ -42,8 +44,6 @@ class UserAgentPolice {
    */
   private $osystems;
   
-  private $FilePrefix = 'UAPOLICE_';
-  
   #===================================================================
   
   public function __construct() {
@@ -52,7 +52,7 @@ class UserAgentPolice {
     $osystems = array();
     #----------------------------------
     # Local cache
-    $CacheFile = $this->CacheDir .'/'. $this->FilePrefix .'data.serial';
+    $CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.serial';
     if (file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
       $data = unserialize(file_get_contents($CacheFile));
       $this->browsers = $data['browsers'];
@@ -326,7 +326,7 @@ class UserAgentPolice {
 
   public static function getLatestVersionChrome($force = false) {
 
-    $filename = $this->CacheDir .'/'. $this->FilePrefix .'VER_CHROME_STABLE.serial';
+    $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_CHROME_STABLE.serial';
 
     if (!$force && file_exists($filename) && filemtime($filename) > time() - 3700) {
       return unserialize(FileGetContents($filename));
@@ -389,12 +389,12 @@ class UserAgentPolice {
 
   public static function getLatestVersionFirefox($force = false) {
 
-    $filename = $this->CacheDir .'/'. $this->FilePrefix .'VER_FIREFOX_STABLE.serial';
+    $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_FIREFOX_STABLE.serial';
 
     if (!$force && file_exists($filename) && filemtime($filename) > time() - 3700) {
       return unserialize(FileGetContents($filename));
     }
-
+y
     $all = self::getAllVersionsFirefox();
     $version = end($all);
 
