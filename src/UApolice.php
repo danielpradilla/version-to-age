@@ -5,31 +5,31 @@
  * @license    Apache License, Version 2.0, http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace peterkahl\UserAgentPolice;
+namespace peterkahl\UApolice;
 
 use peterkahl\curlMaster\curlMaster;
 use \Exception;
 
-class UserAgentPolice {
+class UApolice {
 
   /**
-   * Name of this class
+   * Filename prefix for cache files.
    * @var string
    */
-  const CLASSNAME = __CLASS__;
-  
-  const FILEPREFIX = 'UAPOLICE_';
+  const FILEPREFIX   = 'UAPOLICE_';
+
+  const URLGITSERIAL = 'https://github.com/peterkahl/user-agent-police/src/data.serial';
 
   /**
-   * Maximum age of our data.
-   * @var integer
+   * Path of cache directory.
+   * @var string
    */
-  public $DaysCheck = 30;
-
-  public $CheckDisabled = true;
-
   public $CacheDir;
 
+  /**
+   * Enable fetching data from remote hosts.
+   * @var boolean
+   */
   public $FetchRemoteData = true;
 
   /**
@@ -84,6 +84,12 @@ class UserAgentPolice {
     $data['osystems'] = $osystems;
     $data['epoch']    = $epoch;
     file_put_contents($CacheFile, serialize($data));
+  }
+
+  #===================================================================
+
+  public function GetClassName() {
+    return __CLASS__;
   }
 
   #===================================================================
