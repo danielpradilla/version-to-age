@@ -64,7 +64,7 @@ class UApolice {
     # Fetch from GitHub
     $curlm = new curlMaster;
     $curlm->CacheDir = $this->CacheDir;
-    $curlm->ForcedCacheMaxAge = -1;
+    $curlm->ForcedCacheMaxAge = 86400;
 
     $answer   = $curlm->Request(self::URLGITSERIAL);
 
