@@ -52,17 +52,26 @@ class UserAgentPolice {
       require __DIR__ .'/data.php';
       $this->browsers = $browsers;
       $this->osystems = $osystems;
-      $this->updated  = $timestamp;
+      $this->epoch    = $timestamp;
     }
     #--------------------------------
     if (time()-86400 < $timestamp) {
       # Local cache
       $CacheFile = $CacheDir .'/UAP_data.serial';
       if (file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
-        require $CacheFile;
+        $data = unserialize(file_get_contents($CacheFile));
+        $this->browsers = $data['br'];
+        $this->osystems = $data['os'];
+        $this->epoch    = $data['tm'];
       }
       else {
         # Fetch from external sources
+        $this->browsers = $this->GetBrowserInfoAll();
+        $data = array();
+        $data['br'] = $this->browsers;
+        $data['os'] = $this->osystems;
+        $data['tm'] = time();
+        file_put_contents($CacheFile, serialize($data));
       }
     }
   }
