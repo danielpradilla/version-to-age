@@ -13,11 +13,9 @@ use \Exception;
 class UserAgentPolice {
 
   /**
-   * Timestamp when the above array was updated
+   * Name of this class
    * @var string
    */
-  const UPDATED   = 1513032357; # Tuesday, 12 December 2017 06:45:57 GMT+08:00
-
   const CLASSNAME = __CLASS__;
 
   const DAYSCHECK = 30; # Check every X days
@@ -25,36 +23,35 @@ class UserAgentPolice {
   const CHECK_DISABLED = true;
 
   /**
-   * Most recent version of browsers
+   * Most recent version of browsers.
    * https://en.wikipedia.org/wiki/Timeline_of_web_browsers
-   *
+   * @var array
    */
-  private static $browsers = array(
-    'edge'           => '40.15063',
-    'explorer'       => '11.0.46',
-    'lunascape'      => '6.15.0',
-    'maxthon'        => '5.1.2',
-    'mobile_safari'  => '11.0',
-    'safari'         => '11.0.1',
-    'netsurf'        => '3.7',
-    'opera'          => '49.0',
-    'samsungbrowser' => '6.2',
-    'seamonkey'      => '2.49',
-  );
+  private $browsers;
 
-  private static $osystems = array(
-    'android' => '8.0',
-    'ios'     => '11.2',
-    'macos'   => '10.13.2',
-    'windows' => '10.0',
-  );
+  /**
+   * Most recent version of OS.
+   * @var array
+   */
+  private $osystems;
+  
+  #===================================================================
+  
+  public function __construct() {
+    if (file_exists(__DIR__ .'/data.php')) {
+      require __DIR__ .'/data.php';
+    }
+    $this->browsers = $browsers;
+    $this->osystems = $osystems;
+    $this->updated  = $timestamp;8
+  }
 
   #===================================================================
 
-  private static function GetBrowserInfoAll() {
+  private function GetBrowserInfoAll() {
 
-    $chr = self::getLatestVersionChrome();
-    $fox = self::getLatestVersionFirefox();
+    $chr = $this->getLatestVersionChrome();
+    $fox = $this->getLatestVersionFirefox();
 
     $extra = array(
       'chrome'  => $chr['version'],
@@ -62,18 +59,18 @@ class UserAgentPolice {
       'firefox' => $fox['version'],
     );
 
-    return array_merge(self::$browsers, $extra);
+    return array_merge($this->$browsers, $extra);
   }
 
   #===================================================================
 
-  private static function GetBrowserInfo($br) {
+  private function GetBrowserInfo($br) {
 
-    $br = self::strlower($br);
+    $br = $this->strlower($br);
 
-    if (array_key_exists($br, self::$browsers)) {
+    if (array_key_exists($br, $this->$browsers)) {
       return array(
-        'version'    => self::$browsers[$br],
+        'version'    => $this->$browsers[$br],
         'released'   => self::UPDATED,
         'last_check' => self::UPDATED,
       );
