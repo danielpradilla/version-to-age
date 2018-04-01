@@ -60,43 +60,28 @@ class UserAgentPolice {
     }
     #----------------------------------
     # Fetch from GitHub
-    $GitDataCacheFile = $this->CacheDir .'/UAPOLICE_github.txt';
-    if (file_exists($GitDataCacheFile) && filemtime($GitDataCacheFile) > time()-86400) {
-      require $GitDataCacheFile;
-      $this->browsers   = $browsers;
-      $this->osystems   = $osystems;
-      $this->epoch      = $epoch;
-      $data = array();
-      $data['browsers'] = $browsers;
-      $data['osystems'] = $osystems;
-      $data['epoch']    = $epoch;
-      file_put_contents($CacheFile, serialize($data));
-      return;
-    }
-    else {
-      # Fetch from GitHub
-      #......
-      $this->browsers   = $browsers;
-      $this->osystems   = $osystems;
-      $this->epoch      = $epoch;
-      $data = array();
-      $data['browsers'] = $browsers;
-      $data['osystems'] = $osystems;
-      $data['epoch']    = $epoch;
-      file_put_contents($CacheFile, serialize($data));
-      return;
-    }
+    #......
+    $this->browsers   = $browsers;
+    $this->osystems   = $osystems;
+    $this->epoch      = $epoch;
     #----------------------------------
     
 
     #----------------------------------
-    if (file_exists(__DIR__ .'/data.php')) {
-      require __DIR__ .'/data.php';
+    if (!file_exists(__DIR__ .'/data.php')) {
+      throw new Exception('Required file does not exist');
     }
-    #----------------------------------
+      
+    require __DIR__ .'/data.php';
+
     $this->browsers = $browsers;
     $this->osystems = $osystems;
     $this->epoch    = $epoch;
+    $data = array();
+    $data['browsers'] = $browsers;
+    $data['osystems'] = $osystems;
+    $data['epoch']    = $epoch;
+    file_put_contents($CacheFile, serialize($data));
   }
 
   #===================================================================
