@@ -42,12 +42,11 @@ class UserAgentPolice {
    */
   private $osystems;
   
-  private $FilePrefix;
+  private $FilePrefix = 'UAPOLICE_';
   
   #===================================================================
   
   public function __construct() {
-    $this->FilePrefix = 'UAPOLICE_';
     $epoch    = 0;
     $browsers = array();
     $osystems = array();
@@ -77,9 +76,9 @@ class UserAgentPolice {
       
     require __DIR__ .'/data.php';
 
-    $this->browsers = $browsers;
-    $this->osystems = $osystems;
-    $this->epoch    = $epoch;
+    $this->browsers   = $browsers;
+    $this->osystems   = $osystems;
+    $this->epoch      = $epoch;
     $data = array();
     $data['browsers'] = $browsers;
     $data['osystems'] = $osystems;
