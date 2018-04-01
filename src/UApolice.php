@@ -25,6 +25,8 @@ class UApolice {
    * @var string
    */
   public $CacheDir;
+  
+  public $CAbundle;
 
   /**
    * Enable fetching data from remote hosts.
@@ -64,6 +66,7 @@ class UApolice {
     # Fetch from GitHub
     $curlm = new curlMaster;
     $curlm->CacheDir = $this->CacheDir;
+    $curlm->ca_file  = $this->CAbundle;
     $curlm->ForcedCacheMaxAge = 86400;
 
     $answer   = $curlm->Request(self::URLGITSERIAL);
@@ -432,7 +435,7 @@ class UApolice {
 
     $curlm = new curlMaster;
     $curlm->CacheDir = $this->CacheDir;
-    $curlm->ca_file  = $this->CA_BUNDLE;
+    $curlm->ca_file  = $this->CAbundle;
     $curlm->ForcedCacheMaxAge = -1;
 
     $answer   = $curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/');
@@ -470,8 +473,8 @@ class UApolice {
   public static function getEpochFirefoxVersion($ver) {
 
     $curlm = new curlMaster;
-    $curlm->CacheDir = PATH_ABS_CACHE_SHARED;
-    $curlm->ca_file  = PATH_CA_BUNDLE;
+    $curlm->CacheDir = $this->CacheDir;
+    $curlm->ca_file  = $this->CAbundle;
     $curlm->ForcedCacheMaxAge = -1;
 
     $answer   = $curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/'. $ver .'/');
