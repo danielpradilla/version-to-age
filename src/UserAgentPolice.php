@@ -42,15 +42,18 @@ class UserAgentPolice {
    */
   private $osystems;
   
+  private $FilePrefix;
+  
   #===================================================================
   
   public function __construct() {
+    $this->FilePrefix = 'UAPOLICE_';
     $epoch    = 0;
     $browsers = array();
     $osystems = array();
     #----------------------------------
     # Local cache
-    $CacheFile = $this->CacheDir .'/UAPOLICE_data.serial';
+    $CacheFile = $this->CacheDir .'/'. $this->FilePrefix .'data.serial';
     if (file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
       $data = unserialize(file_get_contents($CacheFile));
       $this->browsers = $data['browsers'];
@@ -324,7 +327,7 @@ class UserAgentPolice {
 
   public static function getLatestVersionChrome($force = false) {
 
-    $filename = PATH_ABS_CACHE_SHARED .'/VERSION_CHROME_STABLE.'. FILE_EXTENSION_SERIAL;
+    $filename = PATH_ABS_CACHE_SHARED .'/'. $this->FilePrefix .'VER_CHROME_STABLE.serial';
 
     if (!$force && file_exists($filename) && filemtime($filename) > time() - 3700) {
       return unserialize(FileGetContents($filename));
@@ -381,7 +384,7 @@ class UserAgentPolice {
 
   public static function getLatestVersionFirefox($force = false) {
 
-    $filename = PATH_ABS_CACHE_SHARED .'/VERSION_FIREFOX_STABLE.'. FILE_EXTENSION_SERIAL;
+    $filename = PATH_ABS_CACHE_SHARED .'/'. $this->FilePrefix .'VER_FIREFOX_STABLE.serial';
 
     if (!$force && file_exists($filename) && filemtime($filename) > time() - 3700) {
       return unserialize(FileGetContents($filename));
