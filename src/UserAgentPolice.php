@@ -45,9 +45,9 @@ class UserAgentPolice {
   #===================================================================
   
   public function __construct() {
-    $timestamp = 0;
-    $browsers  = array();
-    $osystems  = array();
+    $epoch    = 0;
+    $browsers = array();
+    $osystems = array();
     #----------------------------------
     # Local cache
     $CacheFile = $this->CacheDir .'/UAPOLICE_data.serial';
@@ -59,22 +59,35 @@ class UserAgentPolice {
       return;
     }
     #----------------------------------
-    # Fetch from external sources
-    $this->browsers = $this->GetBrowserInfoAll();
     # Fetch from GitHub
     $GitDataCacheFile = $this->CacheDir .'/UAPOLICE_github.txt';
     if (file_exists($GitDataCacheFile) && filemtime($GitDataCacheFile) > time()-86400) {
       require $GitDataCacheFile;
+      $this->browsers   = $browsers;
+      $this->osystems   = $osystems;
+      $this->epoch      = $epoch;
+      $data = array();
+      $data['browsers'] = $browsers;
+      $data['osystems'] = $osystems;
+      $data['epoch']    = $epoch;
+      file_put_contents($CacheFile, serialize($data));
+      return;
     }
     else {
       # Fetch from GitHub
       #......
+      $this->browsers   = $browsers;
+      $this->osystems   = $osystems;
+      $this->epoch      = $epoch;
+      $data = array();
+      $data['browsers'] = $browsers;
+      $data['osystems'] = $osystems;
+      $data['epoch']    = $epoch;
+      file_put_contents($CacheFile, serialize($data));
+      return;
     }
-    $data = array();
-    $data['browsers'] = $this->browsers;
-    $data['osystems'] = $this->osystems;
-    $data['epoch']    = time();
-    file_put_contents($CacheFile, serialize($data));
+    #----------------------------------
+    
 
     #----------------------------------
     if (file_exists(__DIR__ .'/data.php')) {
@@ -83,7 +96,7 @@ class UserAgentPolice {
     #----------------------------------
     $this->browsers = $browsers;
     $this->osystems = $osystems;
-    $this->epoch    = $timestamp;
+    $this->epoch    = $epoch;
   }
 
   #===================================================================
