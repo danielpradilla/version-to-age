@@ -387,18 +387,18 @@ class UserAgentPolice {
 
   #===================================================================
 
-  public static function getLatestVersionFirefox($force = false) {
+  public function getLatestVersionFirefox($force = false) {
 
     $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_FIREFOX_STABLE.serial';
 
     if (!$force && file_exists($filename) && filemtime($filename) > time() - 3700) {
       return unserialize(FileGetContents($filename));
     }
-y
-    $all = self::getAllVersionsFirefox();
+
+    $all = $this->getAllVersionsFirefox();
     $version = end($all);
 
-    $epoch = self::getEpochFirefoxVersion($version);
+    $epoch = $this->getEpochFirefoxVersion($version);
 
     $arr = array(
       'version'    => $version,
@@ -412,11 +412,11 @@ y
 
   #===================================================================
 
-  public static function getAllVersionsFirefox() {
+  public function getAllVersionsFirefox() {
 
     $curlm = new curlMaster;
-    $curlm->CacheDir = self::DIRCACHE;
-    $curlm->ca_file  = self::CA_BUNDLE;
+    $curlm->CacheDir = $this->CacheDir;
+    $curlm->ca_file  = $this->CA_BUNDLE;
     $curlm->ForcedCacheMaxAge = -1;
 
     $answer   = $curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/');
