@@ -3,7 +3,7 @@
  * Timestamp when this data were updated.
  * @var integer
  */
-$timestamp = 1513032357; # Tuesday, 12 December 2017 06:45:57 GMT+08:00
+$epoch = 1522577158; # Sunday, 1 April 2018 10:05:58 GMT
 
 /**
  * Most recent version of browsers.
@@ -11,10 +11,11 @@ $timestamp = 1513032357; # Tuesday, 12 December 2017 06:45:57 GMT+08:00
  * @var array
  */
 $browsers = array(
-  'chrome'         => '',
-  'crios'          => '',
+  'chrome'         => '65.0',
+  'crios'          => '65.0',
   'edge'           => '40.15063',
   'explorer'       => '11.0.46',
+  'firefox'        => '59.0',
   'lunascape'      => '6.15.0',
   'maxthon'        => '5.1.2',
   'mobile_safari'  => '11.0',
