@@ -50,7 +50,7 @@ class UserAgentPolice {
     $osystems  = array();
     #----------------------------------
     # Local cache
-    $CacheFile = $CacheDir .'/UAP_data.serial';
+    $CacheFile = $this->CacheDir .'/UAPOLICE_data.serial';
     if (file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
       $data = unserialize(file_get_contents($CacheFile));
       $this->browsers = $data['browsers'];
@@ -58,9 +58,18 @@ class UserAgentPolice {
       $this->epoch    = $data['epoch'];
       return;
     }
-
+    #----------------------------------
     # Fetch from external sources
     $this->browsers = $this->GetBrowserInfoAll();
+    # Fetch from GitHub
+    $GitDataCacheFile = $this->CacheDir .'/UAPOLICE_github.txt';
+    if (file_exists($GitDataCacheFile) && filemtime($GitDataCacheFile) > time()-86400) {
+      require $GitDataCacheFile;
+    }
+    else {
+      # Fetch from GitHub
+      #......
+    }
     $data = array();
     $data['browsers'] = $this->browsers;
     $data['osystems'] = $this->osystems;
