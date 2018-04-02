@@ -69,7 +69,7 @@ class UApolice {
     #----------------------------------
     # Fetch from GitHub
     $this->curlm->ForcedCacheMaxAge = 86400;
-    $answer   = $this->curlm->Request(self::URLGITJSON);
+    $answer   = $this->curlm->Request(self::URLGITJSON, 'GET', array(), $this->force);
     $body     = $answer['body'];
     $status   = $answer['status'];
     $error    = $answer['error'];
