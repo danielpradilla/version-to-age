@@ -151,14 +151,6 @@ class UApolice {
 
     $br = $this->strlower($br);
 
-    if (array_key_exists($br, $this->$browsers)) {
-      return array(
-        'version'    => $this->$browsers[$br],
-        'released'   => $this->epoch,
-        'last_check' => $this->epoch,
-      );
-    }
-
     if ($br == 'chrome') {
       return self::getLatestVersionChrome();
     }
@@ -167,6 +159,14 @@ class UApolice {
     }
     elseif ($br == 'firefox') {
       return self::getLatestVersionFirefox();
+    }
+
+    if (array_key_exists($br, $this->$browsers)) {
+      return array(
+        'version'    => $this->$browsers[$br],
+        'released'   => $this->epoch,
+        'last_check' => $this->epoch,
+      );
     }
 
     return array();
@@ -232,7 +232,7 @@ class UApolice {
 
     $outdated = self::VersionDistance($ver, $master);
 
-    if ($outdated) {
+    if ($outdated > 1) {
       return array(
         'bool'   => true,
         'factor' => $outdated,
@@ -241,7 +241,7 @@ class UApolice {
 
     return array(
       'bool'   => false, # current
-      'factor' => 0,
+      'factor' => $outdated,
     );
   }
 
@@ -321,7 +321,7 @@ class UApolice {
 
     $outdated = self::VersionDistance($ver, self::$osystems[$name]);
 
-    if ($outdated) {
+    if ($outdated > 1) {
       return array(
         'bool'   => true,
         'factor' => $outdated,
@@ -330,7 +330,7 @@ class UApolice {
 
     return array(
       'bool'   => false, # current
-      'factor' => 0,
+      'factor' => $outdated,
     );
   }
 
