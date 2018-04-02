@@ -49,7 +49,7 @@ class UApolice {
   #===================================================================
   
   public function __construct() {
-    $epoch    = 0;
+    $epoch    = 1522567100; # Any epoch in the past is fine.
     $browsers = array();
     $osystems = array();
     #----------------------------------
@@ -93,7 +93,15 @@ class UApolice {
       return;
     }
     #----------------------------------
-    require __DIR__ .'/data.php';
+    # Local data file
+    $LocalFile = __DIR__ .'/data.json';
+    if (file_exists($LocalFile)) {
+      $data = json_decode(file_get_contents($LocalFile), true);
+      $this->browsers = $data['browsers'];
+      $this->osystems = $data['osystems'];
+      $this->epoch    = $data['epoch'];
+      return;
+    }
     $this->browsers   = $browsers;
     $this->osystems   = $osystems;
     $this->epoch      = $epoch;
