@@ -1,1 +1,22 @@
-["epoch":1522577158,"browsers"=>["edge"=>"40.15063","explorer"=>"11.0.46","lunascape"=>"6.15.0","maxthon"=>"5.1.2","mobile_safari"=>"11.0","safari"=> "11.0.1","netsurf"=>"3.7","opera"=>"49.0","samsungbrowser"=>"6.2","seamonkey"=>"2.49"],["osystems"=>["android"=>"8.0","ios"=>"11.3","macos"=>"10.13.2","windows"=>"10.0"]]
+{
+"epoch":1522577158,
+"browsers":[
+    {
+  "edge":"40.15063",
+  "explorer":"11.0.46",
+  "lunascape":"6.15.0",
+  "maxthon":"5.1.2",
+  "mobile_safari":"11.0",
+  "safari":"11.0.1",
+  "netsurf":"3.7",
+  "opera":"49.0",
+  "samsungbrowser":"6.2",
+  "seamonkey":"2.49"
+    }
+  ],
+"osystems":[
+    {
+  "android":"8.0","ios":"11.3","macos":"10.13.2","windows":"10.0"
+    }
+  ]
+}
