@@ -142,6 +142,8 @@ class UApolice {
     );
 
     $this->browsers = array_merge($this->browsers, $extra);
+    $this->epoch    = time();
+
     return true;
   }
 
