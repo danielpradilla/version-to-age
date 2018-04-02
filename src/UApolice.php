@@ -59,7 +59,7 @@ class UApolice {
     #----------------------------------
     # Local cache
     $CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
-    if (!$force && file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
+    if (!$force && file_exists($CacheFile) && filemtime($CacheFile) > time()-86400) {
       $data = json_decode(file_get_contents($CacheFile), true);
       $this->browsers = $data['browsers'];
       $this->osystems = $data['osystems'];
@@ -68,7 +68,7 @@ class UApolice {
     }
     #----------------------------------
     # Fetch from GitHub
-    $this->curlm->ForcedCacheMaxAge = 86400;
+    $this->curlm->ForcedCacheMaxAge = 2*86400;
     $answer   = $this->curlm->Request(self::URLGITJSON, 'GET', array(), $this->force);
     $body     = $answer['body'];
     $status   = $answer['status'];
@@ -136,8 +136,8 @@ class UApolice {
     if (array_key_exists($br, $this->$browsers)) {
       return array(
         'version'    => $this->$browsers[$br],
-        'released'   => self::UPDATED,
-        'last_check' => self::UPDATED,
+        'released'   => $this->epoch,
+        'last_check' => $this->epoch,
       );
     }
 
@@ -371,7 +371,7 @@ class UApolice {
 
     $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_CHROME_STABLE.serial';
 
-    if (!this->$force && file_exists($filename) && filemtime($filename) > time() - 3600) {
+    if (!this->$force && file_exists($filename) && filemtime($filename) > time() - 2*3600) {
       return unserialize(FileGetContents($filename));
     }
 
@@ -429,7 +429,7 @@ class UApolice {
 
     $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_FIREFOX_STABLE.serial';
 
-    if (!$this->force && file_exists($filename) && filemtime($filename) > time() - 3700) {
+    if (!$this->force && file_exists($filename) && filemtime($filename) > time() - 2*3600) {
       return unserialize(FileGetContents($filename));
     }
 
