@@ -49,10 +49,7 @@ class UApolice {
   #===================================================================
   
   public function __construct() {
-    $epoch    = 1522567100; # Any epoch in the past is fine.
-    $browsers = array();
-    $osystems = array();
-    #----------------------------------
+    $epoch = 1522567100;
     # Local cache
     $CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
     if (file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
@@ -102,9 +99,8 @@ class UApolice {
       $this->epoch    = $data['epoch'];
       return;
     }
-    $this->browsers   = $browsers;
-    $this->osystems   = $osystems;
-    $this->epoch      = $epoch;
+
+    throw new Exception('No data files found');
   }
 
   #===================================================================
