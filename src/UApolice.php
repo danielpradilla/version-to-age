@@ -53,6 +53,9 @@ class UApolice {
       throw new Exception('Illegal type argument force');
     }
     $this->force = $force;
+    $this->curlm = new curlMaster;
+    $this->curlm->CacheDir = $this->CacheDir;
+    $this->curlm->ca_file  = $this->CAbundle;
     #----------------------------------
     # Local cache
     $CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
@@ -65,22 +68,11 @@ class UApolice {
     }
     #----------------------------------
     # Fetch from GitHub
-    $curlm = new curlMaster;
-    $curlm->CacheDir = $this->CacheDir;
-    $curlm->ca_file  = $this->CAbundle;
-    if ($force) {
-      $curlm->ForcedCacheMaxAge = 10;
-    }
-    else {
-      $curlm->ForcedCacheMaxAge = 86400;
-    }
-
-    $answer   = $curlm->Request(self::URLGITJSON);
-
+    $this->curlm->ForcedCacheMaxAge = 86400;
+    $answer   = $this->curlm->Request(self::URLGITJSON);
     $body     = $answer['body'];
     $status   = $answer['status'];
     $error    = $answer['error'];
-
     unset($answer);
     
     if ($status == '200' && !empty($body)) {
@@ -343,20 +335,22 @@ class UApolice {
     # We're concerned only with major & minor!
 
     for ($n = 0; $n < 2; $n++) {
-      if (!isset($test[$n]) || $test[$n] == '') {
-        $test[$n] = '0';
+      if (empty($test[$n])) {
+        $test[$n] = 0;
       }
-      if (!isset($master[$n])) || $master[$n] == '') {
-        $master[$n] = '0';
+      if (empty($master[$n])) {
+        $master[$n] = 0;
       }
+      $test[$n]   = (integer) $test[$n];
+      $master[$n] = (integer) $master[$n];
     }
 
     # Normalise values
     $big = max($test[1], $master[1]);
     $test[1]   = $test[1]  /($big*1.01);
     $master[1] = $master[1]/($big*1.01);
-    $t = (float) $test[0]   + $test[1];
-    $m = (float) $master[0] + $master[1];
+    $t = $test[0]   + $test[1];
+    $m = $master[0] + $master[1];
 
     # Subtract
     $diff = $m - $t;
@@ -377,16 +371,11 @@ class UApolice {
       return unserialize(FileGetContents($filename));
     }
 
-    $curlm = new curlMaster;
-    $curlm->CacheDir = $this->CacheDir;
-    $curlm->ForcedCacheMaxAge = -1;
-
-    $answer   = $curlm->Request('http://omahaproxy.appspot.com/all'); # CSV file
-
+    $this->curlm->ForcedCacheMaxAge = -1;
+    $answer   = $this->curlm->Request('http://omahaproxy.appspot.com/all'); # CSV file
     $body     = $answer['body'];
     $status   = $answer['status'];
     $error    = $answer['error'];
-
     unset($answer);
 
     if ($status == '200') {
@@ -459,17 +448,11 @@ class UApolice {
 
   public function getAllVersionsFirefox() {
 
-    $curlm = new curlMaster;
-    $curlm->CacheDir = $this->CacheDir;
-    $curlm->ca_file  = $this->CAbundle;
-    $curlm->ForcedCacheMaxAge = -1;
-
-    $answer   = $curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/');
-
+    $this->curlm->ForcedCacheMaxAge = -1;
+    $answer   = $this->curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/');
     $body     = $answer['body'];
     $status   = $answer['status'];
     $error    = $answer['error'];
-
     unset($answer);
 
     if ($status != '200') {
@@ -498,17 +481,11 @@ class UApolice {
 
   public static function getEpochFirefoxVersion($ver) {
 
-    $curlm = new curlMaster;
-    $curlm->CacheDir = $this->CacheDir;
-    $curlm->ca_file  = $this->CAbundle;
-    $curlm->ForcedCacheMaxAge = -1;
-
-    $answer   = $curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/'. $ver .'/');
-
+    $this->curlm->ForcedCacheMaxAge = -1;
+    $answer   = $this->curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/'. $ver .'/');
     $body     = $answer['body'];
     $status   = $answer['status'];
     $error    = $answer['error'];
-
     unset($answer);
 
     if ($status != '200') {
