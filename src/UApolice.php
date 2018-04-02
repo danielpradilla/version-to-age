@@ -266,20 +266,20 @@ class UApolice {
       }
       if (version_compare($ver, '6.3', '>=')) { # Windows 8.1
         return array(
-          'bool'   => true,
+          'bool'   => false,
           'factor' => .5,
         );
       }
       if (version_compare($ver, '6.2', '>=')) { # Windows 8.0
         return array(
-          'bool'   => true,
-          'factor' => .98,
+          'bool'   => false,
+          'factor' => .81,
         );
       }
       if (version_compare($ver, '6.1', '>=')) { # Windows 7.0
         return array(
-          'bool'   => true,
-          'factor' => 2,
+          'bool'   => false,
+          'factor' => .88,
         );
       }
       if (version_compare($ver, '6.0', '>=')) { # Vista
