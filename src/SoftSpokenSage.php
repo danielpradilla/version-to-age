@@ -388,10 +388,10 @@ class SoftSpokenSage {
 
   public static function getLatestVersionChrome() {
 
-    $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_CHROME_STABLE.serial';
+    $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_CHROME_STABLE.json';
 
     if (!this->$force && file_exists($filename) && filemtime($filename) > time() - 2*3600) {
-      return unserialize(FileGetContents($filename));
+      return json_decode(FileGetContents($filename), true);
     }
 
     $this->curlm->ForcedCacheMaxAge = -1;
@@ -430,7 +430,7 @@ class SoftSpokenSage {
         'last_check' => time(),
       );
 
-      FilePutContents($filename, serialize($arr), LOCK_EX);
+      FilePutContents($filename, json_encode($arr), LOCK_EX);
       return $arr;
     }
 
@@ -446,10 +446,10 @@ class SoftSpokenSage {
 
   public function getLatestVersionFirefox() {
 
-    $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_FIREFOX_STABLE.serial';
+    $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_FIREFOX_STABLE.json';
 
     if (!$this->force && file_exists($filename) && filemtime($filename) > time() - 2*3600) {
-      return unserialize(FileGetContents($filename));
+      return json_decode(FileGetContents($filename), true);
     }
 
     $all = $this->getAllVersionsFirefox();
@@ -463,7 +463,7 @@ class SoftSpokenSage {
       'last_check' => time(),
     );
 
-    FilePutContents($filename, serialize($arr), LOCK_EX);
+    FilePutContents($filename, json_encode($arr), LOCK_EX);
     return $arr;
   }
 
