@@ -275,19 +275,19 @@ class UApolice {
       if (version_compare($ver, '6.3', '>=')) { # Windows 8.1
         return array(
           'bool'   => true,
-          'factor' => 1,
+          'factor' => .5,
         );
       }
       if (version_compare($ver, '6.2', '>=')) { # Windows 8.0
         return array(
           'bool'   => true,
-          'factor' => 2,
+          'factor' => .98,
         );
       }
       if (version_compare($ver, '6.1', '>=')) { # Windows 7.0
         return array(
           'bool'   => true,
-          'factor' => 3,
+          'factor' => 2,
         );
       }
       if (version_compare($ver, '6.0', '>=')) { # Vista
