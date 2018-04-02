@@ -60,9 +60,10 @@ class UApolice {
    * Constructor
    * Data array is created from local and remote sources.
    * Data array is updated if outdated.
+   * Data are stored in cache.
    * @param  boolean $force ... Disables reading of cache, thus forcing
-   *                            new requests to remote hosts fetch 
-   *                            the most recent data.
+   *                            new requests to remote hosts to fetch 
+   *                            fresh data.
    * @throws \Exception
    */
   public function __construct($force = false) {
