@@ -323,6 +323,15 @@ class UApolice {
     if ($test === $master) {
       return 0;
     }
+    
+    if (substr_count('.', $master) < 1) {
+      $master = $master .'.0';
+    }
+    
+    if (substr_count('.', $test) < 1) {
+      $test = $test .'.0';
+    }
+
     $master = explode('.', $master);
     $test   = explode('.', $test);
 
@@ -335,12 +344,6 @@ class UApolice {
     # We're concerned only with major & minor!
 
     for ($n = 0; $n < 2; $n++) {
-      if (empty($test[$n])) {
-        $test[$n] = 0;
-      }
-      if (empty($master[$n])) {
-        $master[$n] = 0;
-      }
       $test[$n]   = (integer) $test[$n];
       $master[$n] = (integer) $master[$n];
     }
@@ -349,6 +352,7 @@ class UApolice {
     $big = max($test[1], $master[1]);
     $test[1]   = $test[1]  /($big*1.01);
     $master[1] = $master[1]/($big*1.01);
+    
     $t = $test[0]   + $test[1];
     $m = $master[0] + $master[1];
 
