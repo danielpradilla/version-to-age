@@ -367,11 +367,11 @@ class UApolice {
 
   #===================================================================
 
-  public static function getLatestVersionChrome($force = false) {
+  public static function getLatestVersionChrome() {
 
     $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_CHROME_STABLE.serial';
 
-    if (!$force && file_exists($filename) && filemtime($filename) > time() - 3700) {
+    if (!this->$force && file_exists($filename) && filemtime($filename) > time() - 3600) {
       return unserialize(FileGetContents($filename));
     }
 
@@ -425,11 +425,11 @@ class UApolice {
 
   #===================================================================
 
-  public function getLatestVersionFirefox($force = false) {
+  public function getLatestVersionFirefox() {
 
     $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_FIREFOX_STABLE.serial';
 
-    if (!$force && file_exists($filename) && filemtime($filename) > time() - 3700) {
+    if (!$this->force && file_exists($filename) && filemtime($filename) > time() - 3700) {
       return unserialize(FileGetContents($filename));
     }
 
@@ -532,15 +532,6 @@ class UApolice {
       return '<img src="data:image/svg+xml;base64,'. base64_encode(FileGetContents($file)) .'" width="'. $pixelDim .'" height="'. $pixelDim .'">';
     }
     return '';
-  }
-
-  #===================================================================
-
-  public static function is_classInfoOutdated() {
-    if (self::CHECK_DISABLED) {
-      return false; # No checking
-    }
-    return ((time() - (self::DAYSCHECK * 86400)) > self::UPDATED);
   }
 
   #===================================================================
