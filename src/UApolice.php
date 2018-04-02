@@ -69,7 +69,7 @@ class UApolice {
     $curlm->CacheDir = $this->CacheDir;
     $curlm->ca_file  = $this->CAbundle;
     if ($force) {
-      $curlm->ForcedCacheMaxAge = -1;
+      $curlm->ForcedCacheMaxAge = 10;
     }
     else {
       $curlm->ForcedCacheMaxAge = 86400;
