@@ -220,7 +220,7 @@ class UApolice {
       );
     }
 
-    $outdated = self::VerCompare($ver, $master);
+    $outdated = self::VersionDistance($ver, $master);
 
     if ($outdated) {
       return array(
@@ -297,7 +297,7 @@ class UApolice {
       );
     }
 
-    $outdated = self::VerCompare($ver, self::$osystems[$name]);
+    $outdated = self::VersionDistance($ver, self::$osystems[$name]);
 
     if ($outdated) {
       return array(
@@ -314,7 +314,7 @@ class UApolice {
 
   #===================================================================
 
-  public static function VerCompare($test, $master) {
+  public static function VersionDistance($test, $master) {
 
     $master = explode('.', $master);
     $test   = explode('.', $test);
