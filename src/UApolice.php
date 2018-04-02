@@ -316,6 +316,9 @@ class UApolice {
 
   public static function VersionDistance($test, $master) {
 
+    if ($test === $master) {
+      return 0;
+    }
     $master = explode('.', $master);
     $test   = explode('.', $test);
 
@@ -325,7 +328,7 @@ class UApolice {
     #           | |  |    |
     # Version: 62.0.3202.89
     # $n ....   0 1 2
-    # We're comparing only major & minor!
+    # We're concerned only with major & minor!
 
     for ($n = 0; $n < 2; $n++) {
       if (!isset($test[$n]) || $test[$n] == '') {
@@ -336,15 +339,15 @@ class UApolice {
       }
     }
 
-    $len = max(strlen($test[1]), strlen($master[1]));
+    # Normalise values
+    $big = max($test[1], $master[1]);
+    $test[1]   = $test[1]  /($big*1.01);
+    $master[1] = $master[1]/($big*1.01);
+    $t = (float) $test[0]   + $test[1];
+    $m = (float) $master[0] + $master[1];
 
-    $test[1]   = str_pad($test[1],   $len, '0', STR_PAD_LEFT);
-    $master[1] = str_pad($master[1], $len, '0', STR_PAD_LEFT);
-
-    $t = (float) $test[0]   .'.'. $test[1];
-    $m = (float) $master[0] .'.'. $master[1];
-
-    $diff = $m - $t
+    # Subtract
+    $diff = $m - $t;
 
     if ($diff > 0) {
       return $diff;
