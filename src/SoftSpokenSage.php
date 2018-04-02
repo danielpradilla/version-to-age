@@ -5,24 +5,24 @@
  * @license    Apache License, Version 2.0, http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace peterkahl\UApolice;
+namespace peterkahl\SoftSpokenSage;
 
 use peterkahl\curlMaster\curlMaster;
 use \Exception;
 
-class UApolice {
+class SoftSpokenSage {
 
   /**
    * Filename prefix for cache files.
    * @var string
    */
-  const FILEPREFIX = 'UAPOLICE_';
+  const FILEPREFIX = 'SSSAGE_';
 
   /**
    * GitHub URL to fetch latest data
    * @var string
    */
-  const URLGITJSON = 'https://github.com/peterkahl/UApolice/src/data.json';
+  const URLGITJSON = 'https://github.com/peterkahl/soft-spoken-sage/src/data.json';
 
   /**
    * Path of cache directory.
