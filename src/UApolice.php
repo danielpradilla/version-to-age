@@ -49,7 +49,7 @@ class UApolice {
   #===================================================================
   
   public function __construct() {
-    $epoch = 1522567100;
+    #----------------------------------
     # Local cache
     $CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
     if (file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
