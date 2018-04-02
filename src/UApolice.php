@@ -18,6 +18,10 @@ class UApolice {
    */
   const FILEPREFIX = 'UAPOLICE_';
 
+  /**
+   * GitHub URL to fetch latest data
+   * @var string
+   */
   const URLGITJSON = 'https://github.com/peterkahl/UApolice/src/data.json';
 
   /**
@@ -25,7 +29,11 @@ class UApolice {
    * @var string
    */
   public $CacheDir;
-  
+
+  /**
+   * Path to CA Certificate Bundle
+   * @var string
+   */
   public $CAbundle;
 
   /**
@@ -47,7 +55,16 @@ class UApolice {
   private $osystems;
   
   #===================================================================
-  
+
+  /**
+   * Constructor
+   * Data array is created from local and remote sources.
+   * Data array is updated if outdated.
+   * @param  boolean $force ... Disables reading of cache, thus forcing
+   *                            new requests to remote hosts fetch 
+   *                            the most recent data.
+   * @throws \Exception
+   */
   public function __construct($force = false) {
     if (!is_bool($force)) {
       throw new Exception('Illegal type argument force');
