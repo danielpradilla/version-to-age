@@ -290,10 +290,22 @@ class UApolice {
           'factor' => 3,
         );
       }
-      # Vista and older
+      if (version_compare($ver, '6.0', '>=')) { # Vista
+        return array(
+          'bool'   => true,
+          'factor' => 4,
+        );
+      }
+      if (version_compare($ver, '5.2', '>=')) { # XP
+        return array(
+          'bool'   => true,
+          'factor' => 5,
+        );
+      }
+      # Older
       return array(
         'bool'   => true,
-        'factor' => 4,
+        'factor' => 6,
       );
     }
 
