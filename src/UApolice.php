@@ -102,8 +102,7 @@ class UApolice {
       # Latest browser data
       if ($this->GetBrowserInfoAll()) {
         $data['browsers'] = $this->browsers;
-        $data['epoch']    = time();
-        $this->epoch      = $data['epoch'];
+        $data['epoch']    = $this->epoch;
       }
       file_put_contents($CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE));
       return;
