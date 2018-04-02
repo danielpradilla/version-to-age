@@ -48,11 +48,15 @@ class UApolice {
   
   #===================================================================
   
-  public function __construct() {
+  public function __construct($force = false) {
+    if (!is_bool($force)) {
+      throw new Exception('Illegal type argument force');
+    }
+    $this->force = $force;
     #----------------------------------
     # Local cache
     $CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
-    if (file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
+    if (!$force && file_exists($CacheFile) && filemtime($CacheFile) > time()-6*3600) {
       $data = json_decode(file_get_contents($CacheFile), true);
       $this->browsers = $data['browsers'];
       $this->osystems = $data['osystems'];
@@ -64,7 +68,12 @@ class UApolice {
     $curlm = new curlMaster;
     $curlm->CacheDir = $this->CacheDir;
     $curlm->ca_file  = $this->CAbundle;
-    $curlm->ForcedCacheMaxAge = 86400;
+    if ($force) {
+      $curlm->ForcedCacheMaxAge = -1;
+    }
+    else {
+      $curlm->ForcedCacheMaxAge = 86400;
+    }
 
     $answer   = $curlm->Request(self::URLGITJSON);
 
