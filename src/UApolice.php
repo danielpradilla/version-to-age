@@ -331,15 +331,15 @@ class UApolice {
       if (!isset($test[$n]) || $test[$n] == '') {
         $test[$n] = '0';
       }
-      if (!isset($master[$n])) || $master[$n] == ''{
+      if (!isset($master[$n])) || $master[$n] == '') {
         $master[$n] = '0';
       }
     }
 
     $len = max(strlen($test[1]), strlen($master[1]));
 
-    $test[1]   = str_pad($test[1],   '0', $len, STR_PAD_LEFT);
-    $master[1] = str_pad($master[1], '0', $len, STR_PAD_LEFT);
+    $test[1]   = str_pad($test[1],   $len, '0', STR_PAD_LEFT);
+    $master[1] = str_pad($master[1], $len, '0', STR_PAD_LEFT);
 
     $t = (float) $test[0]   .'.'. $test[1];
     $m = (float) $master[0] .'.'. $master[1];
