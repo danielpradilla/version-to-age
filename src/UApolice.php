@@ -328,31 +328,28 @@ class UApolice {
     # We're comparing only major & minor!
 
     for ($n = 0; $n < 2; $n++) {
-
-      if (!isset($test[$n])) {
-        $test[$n] = 0;
+      if (!isset($test[$n]) || $test[$n] == '') {
+        $test[$n] = '0';
       }
-
-      if (!isset($master[$n])) {
-        $master[$n] = 0;
+      if (!isset($master[$n])) || $master[$n] == ''{
+        $master[$n] = '0';
       }
-
-      $test[$n]   = (integer) $test[$n];
-      $master[$n] = (integer) $master[$n];
-
-      $diff = $master[$n] - $test[$n];
-
-      if ($diff > 0) {
-        return ($diff/($n + 1)); # outdated
-      }
-
-      if ($diff < 0) {
-        return false; # newer
-      }
-
     }
 
-    return false; # current (version string identical)
+    $len = max(strlen($test[1]), strlen($master[1]));
+
+    $test[1]   = str_pad($test[1],   '0', $len, STR_PAD_LEFT);
+    $master[1] = str_pad($master[1], '0', $len, STR_PAD_LEFT);
+
+    $t = (float) $test[0]   .'.'. $test[1];
+    $m = (float) $master[0] .'.'. $master[1];
+
+    $diff = $m - $t
+
+    if ($diff > 0) {
+      return $diff;
+    }
+    return 0;
   }
 
   #===================================================================
