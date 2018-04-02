@@ -142,7 +142,7 @@ class UApolice {
     );
 
     $this->browsers = array_merge($this->browsers, $extra);
-    return $this->browsers;
+    return true;
   }
 
   #===================================================================
