@@ -108,11 +108,11 @@ class SoftSpokenSage {
       #--------------------------------
       # Latest browser data
       $this->GetBrowserInfoAll();
-      $data['browsers']     = $this->browsers;
-      $data['released']     = max($this->released, $data['released']);
-      $data['url']          = 'https://github.com/peterkahl/soft-spoken-sage';
-      $data['copyright']    = '2018 Peter Kahl';
-      $data['license']      = 'Apache-2';
+      $data['browsers']  = $this->browsers;
+      $data['released']  = max($this->released, $data['released']);
+      $data['url']       = 'https://github.com/peterkahl/soft-spoken-sage';
+      $data['copyright'] = '2018 Peter Kahl';
+      $data['license']   = 'Apache-2';
       file_put_contents($CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE));
       return;
     }
