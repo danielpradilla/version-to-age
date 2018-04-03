@@ -22,7 +22,7 @@ class Sagem {
    * GitHub URL to fetch latest data
    * @var string
    */
-  const URLGITJSON = 'https://github.com/peterkahl/sagem/src/data.json';
+  const URLGITJSON = 'https://github.com/peterkahl/Sagem/src/data.json';
 
   /**
    * Path of cache directory.
@@ -110,7 +110,7 @@ class Sagem {
       $this->GetBrowserInfoAll();
       $data['browsers']  = $this->browsers;
       $data['released']  = max($this->released, $data['released']);
-      $data['url']       = 'https://github.com/peterkahl/sagem';
+      $data['url']       = 'https://github.com/peterkahl/Sagem';
       $data['copyright'] = '2018 Peter Kahl';
       $data['license']   = 'Apache-2';
       file_put_contents($CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE));
