@@ -79,9 +79,6 @@ class SoftSpokenSage {
       $this->UseLocalData();
       return;
     }
-    $this->curlm = new curlMaster;
-    $this->curlm->CacheDir = $this->CacheDir;
-    $this->curlm->ca_file  = $this->CAbundle;
     #----------------------------------
     # Local cache
     $CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
@@ -95,6 +92,9 @@ class SoftSpokenSage {
     }
     #----------------------------------
     # Fetch from GitHub
+    $this->curlm = new curlMaster;
+    $this->curlm->CacheDir = $this->CacheDir;
+    $this->curlm->ca_file  = $this->CAbundle;
     $this->curlm->ForcedCacheMaxAge = 2*86400;
     $answer = $this->curlm->Request(self::URLGITJSON, 'GET', array(), $this->force);
     $body   = $answer['body'];
