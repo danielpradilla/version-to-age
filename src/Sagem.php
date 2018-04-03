@@ -5,24 +5,24 @@
  * @license    Apache License, Version 2.0, http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace peterkahl\SoftSpokenSage;
+namespace peterkahl\Sagem;
 
 use peterkahl\curlMaster\curlMaster;
 use \Exception;
 
-class SoftSpokenSage {
+class Sagem {
 
   /**
    * Filename prefix for cache files.
    * @var string
    */
-  const FILEPREFIX = 'SSSAGE_';
+  const FILEPREFIX = 'SAGEM_';
 
   /**
    * GitHub URL to fetch latest data
    * @var string
    */
-  const URLGITJSON = 'https://github.com/peterkahl/soft-spoken-sage/src/data.json';
+  const URLGITJSON = 'https://github.com/peterkahl/sagem/src/data.json';
 
   /**
    * Path of cache directory.
@@ -110,7 +110,7 @@ class SoftSpokenSage {
       $this->GetBrowserInfoAll();
       $data['browsers']  = $this->browsers;
       $data['released']  = max($this->released, $data['released']);
-      $data['url']       = 'https://github.com/peterkahl/soft-spoken-sage';
+      $data['url']       = 'https://github.com/peterkahl/sagem';
       $data['copyright'] = '2018 Peter Kahl';
       $data['license']   = 'Apache-2';
       file_put_contents($CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE));
