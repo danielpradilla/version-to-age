@@ -38,6 +38,10 @@ class SoftSpokenSage {
 
   /**
    * Enable fetching data from remote hosts.
+   * If true, data is fetched remotely and 
+   * stored in cache.
+   * If false, only local data file is used, caching
+   * is not used.
    * @var boolean
    */
   public $FetchRemoteData = true;
@@ -71,6 +75,10 @@ class SoftSpokenSage {
       throw new Exception('Illegal type argument force');
     }
     $this->force = $force;
+    if (!$this->FetchRemoteData) {
+      $this->UseLocalData();
+      return;
+    }
     $this->curlm = new curlMaster;
     $this->curlm->CacheDir = $this->CacheDir;
     $this->curlm->ca_file  = $this->CAbundle;
@@ -87,12 +95,10 @@ class SoftSpokenSage {
     #----------------------------------
     # Fetch from GitHub
     $this->curlm->ForcedCacheMaxAge = 2*86400;
-    $answer   = $this->curlm->Request(self::URLGITJSON, 'GET', array(), $this->force);
-    $body     = $answer['body'];
-    $status   = $answer['status'];
-    $error    = $answer['error'];
+    $answer = $this->curlm->Request(self::URLGITJSON, 'GET', array(), $this->force);
+    $body   = $answer['body'];
+    $status = $answer['status'];
     unset($answer);
-    
     if ($status == '200' && !empty($body)) {
       $data = json_decode($body, true);
       $this->browsers = $data['browsers'];
@@ -100,15 +106,19 @@ class SoftSpokenSage {
       $this->epoch    = $data['epoch'];
       #--------------------------------
       # Latest browser data
-      if ($this->GetBrowserInfoAll()) {
-        $data['browsers'] = $this->browsers;
-        $data['epoch']    = $this->epoch;
-      }
+      $this->GetBrowserInfoAll();
+      $data['browsers'] = $this->browsers;
+      $data['epoch']    = $this->epoch;
       file_put_contents($CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE));
       return;
     }
-    #----------------------------------
-    # Local data file
+    
+    $this->UseLocalData();
+  }
+
+  #===================================================================
+
+  private function UseLocalData() {
     $LocalFile = __DIR__ .'/data.json';
     if (file_exists($LocalFile)) {
       $data = json_decode(file_get_contents($LocalFile), true);
@@ -117,7 +127,6 @@ class SoftSpokenSage {
       $this->epoch    = $data['epoch'];
       return;
     }
-
     throw new Exception('No data files found');
   }
 
@@ -152,14 +161,16 @@ class SoftSpokenSage {
 
     $br = $this->strlower($br);
 
-    if ($br == 'chrome') {
-      return self::getLatestVersionChrome();
-    }
-    elseif ($br == 'crios') {
-      return self::getLatestVersionChrome();
-    }
-    elseif ($br == 'firefox') {
-      return self::getLatestVersionFirefox();
+    if ($this->FetchRemoteData) {
+      if ($br == 'chrome') {
+        return self::getLatestVersionChrome();
+      }
+      elseif ($br == 'crios') {
+        return self::getLatestVersionChrome();
+      }
+      elseif ($br == 'firefox') {
+        return self::getLatestVersionFirefox();
+      }
     }
 
     if (array_key_exists($br, $this->$browsers)) {
@@ -179,7 +190,7 @@ class SoftSpokenSage {
 
     $br = self::strlower($br);
 
-    if ($br == 'unknown') {
+    if ($br == '') {
       return '';
     }
 
@@ -198,7 +209,7 @@ class SoftSpokenSage {
 
     $os = self::strlower($os);
 
-    if ($os == 'unknown') {
+    if ($os == '') {
       return '';
     }
 
@@ -215,7 +226,7 @@ class SoftSpokenSage {
 
     $name = self::strlower($name);
 
-    if ($name == 'unknown' || $ver == '') {
+    if ($name == '' || $ver == '') {
       return array(
         'bool'   => false,
         'factor' => 0,
@@ -252,7 +263,7 @@ class SoftSpokenSage {
 
     $name = self::strlower($name);
 
-    if ($name == 'unknown' || $ver == '') {
+    if ($name == '' || $ver == '') {
       return array(
         'bool'   => false,
         'factor' => 0,
@@ -395,19 +406,15 @@ class SoftSpokenSage {
     }
 
     $this->curlm->ForcedCacheMaxAge = -1;
-    $answer   = $this->curlm->Request('http://omahaproxy.appspot.com/all'); # CSV file
-    $body     = $answer['body'];
-    $status   = $answer['status'];
-    $error    = $answer['error'];
+    $answer = $this->curlm->Request('http://omahaproxy.appspot.com/all'); # CSV file
+    $body   = $answer['body'];
+    $status = $answer['status'];
     unset($answer);
-
     if ($status == '200') {
-
       $body = str_replace("\r\n", "\n", $body);
       $body = str_replace("\r", "\n", $body);
       $body = preg_replace("/\n\n+/", "\n", $body);
       $body = explode("\n", $body);
-
       # os,channel,current_version,previous_version,current_reldate,previous_reldate,branch_base_commit,branch_base_position,branch_commit,true_branch,v8_version
       # mac,stable,62.0.3202.89,62.0.3202.75,11/06/17,10/26/17,fa6a5d87adff761bc16afc5498c3f5944c1daa68,499098,ba7a0041073a5e9928d277806bfe24c325d113e5,3202,6.2.414.40
       # 0     1         2            3          4         5
@@ -470,65 +477,51 @@ class SoftSpokenSage {
   #===================================================================
 
   public function getAllVersionsFirefox() {
-
+    $new = array();
     $this->curlm->ForcedCacheMaxAge = -1;
-    $answer   = $this->curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/');
-    $body     = $answer['body'];
-    $status   = $answer['status'];
-    $error    = $answer['error'];
+    $answer = $this->curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/');
+    $body   = $answer['body'];
+    $status = $answer['status'];
     unset($answer);
-
-    if ($status != '200') {
-      throw new Exception('HTTP request failed with status '. $status .' '. $error);
-    }
-
-    $body = self::StripHtmlTags($body);
-    $body = str_replace("\r\n", "\n", $body);
-    $body = str_replace("\r", "\n", $body);
-    $body = preg_replace("/\n\n+/", "\n", $body);
-    $body = explode("\n", $body);
-    $new  = array();
-
-    foreach ($body as $line) {
-      if (is_numeric(substr($line, 0, 1)) && !strpos($line, '-') &&  !strpos($line, 'b') &&  !strpos($line, 'esr') &&  !strpos($line, 'plugin') &&  !strpos($line, 'rc')) {
-        $new[] = rtrim($line, '/');
+    if ($status == '200') {
+      $body = self::StripHtmlTags($body);
+      $body = str_replace("\r\n", "\n", $body);
+      $body = str_replace("\r", "\n", $body);
+      $body = preg_replace("/\n\n+/", "\n", $body);
+      $body = explode("\n", $body);
+      foreach ($body as $line) {
+        if (is_numeric(substr($line, 0, 1)) && !strpos($line, '-') &&  !strpos($line, 'b') &&  !strpos($line, 'esr') &&  !strpos($line, 'plugin') &&  !strpos($line, 'rc')) {
+          $new[] = rtrim($line, '/');
+        }
       }
+      natcasesort($new);
     }
-
-    natcasesort($new);
-
     return $new;
   }
 
   #===================================================================
 
   public static function getEpochFirefoxVersion($ver) {
-
+    $new = array();
     $this->curlm->ForcedCacheMaxAge = -1;
-    $answer   = $this->curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/'. $ver .'/');
-    $body     = $answer['body'];
-    $status   = $answer['status'];
-    $error    = $answer['error'];
+    $answer = $this->curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/'. $ver .'/');
+    $body   = $answer['body'];
+    $status = $answer['status'];
     unset($answer);
-
-    if ($status != '200') {
-      throw new Exception('HTTP request failed with status '. $status .' '. $error);
-    }
-
-    $body = self::StripHtmlTags($body);
-    $body = str_replace("\r", "\n", $body);
-    $body = preg_replace("/\n\n+/", "\n", $body);
-    $body = explode("\n", $body);
-    $new  = array();
-
-    foreach ($body as $line) {
-      if (preg_match('/^\d\d?-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d\d\d\d/', $line)) {
-        $new[] = $line;
+    if ($status == '200') {
+      $body = self::StripHtmlTags($body);
+      $body = str_replace("\r", "\n", $body);
+      $body = preg_replace("/\n\n+/", "\n", $body);
+      $body = explode("\n", $body);
+      foreach ($body as $line) {
+        if (preg_match('/^\d\d?-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d\d\d\d/', $line)) {
+          $new[] = $line;
+        }
       }
+      $latest = end($new);
+      return strtotime($latest .' GMT');
     }
-
-    $latest = end($new);
-    return strtotime($latest .' GMT');
+    return '';
   }
 
   #===================================================================
