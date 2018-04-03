@@ -87,9 +87,10 @@ class SoftSpokenSage {
     $CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
     if (!$force && file_exists($CacheFile) && filemtime($CacheFile) > time()-86400) {
       $data = json_decode(file_get_contents($CacheFile), true);
-      $this->browsers = $data['browsers'];
-      $this->osystems = $data['osystems'];
-      $this->epoch    = $data['epoch'];
+      $this->browsers   = $data['browsers'];
+      $this->osystems   = $data['osystems'];
+      $this->released   = $data['released'];
+      $this->last_check = time();
       return;
     }
     #----------------------------------
@@ -101,14 +102,17 @@ class SoftSpokenSage {
     unset($answer);
     if ($status == '200' && !empty($body)) {
       $data = json_decode($body, true);
-      $this->browsers = $data['browsers'];
-      $this->osystems = $data['osystems'];
-      $this->epoch    = $data['epoch'];
+      $this->browsers   = $data['browsers'];
+      $this->osystems   = $data['osystems'];
+      $this->last_check = time();
       #--------------------------------
       # Latest browser data
       $this->GetBrowserInfoAll();
-      $data['browsers'] = $this->browsers;
-      $data['epoch']    = $this->epoch;
+      $data['browsers']     = $this->browsers;
+      $data['released']     = max($this->released, $data['released']);
+      $data['url']          = 'https://github.com/peterkahl/soft-spoken-sage';
+      $data['copyright']    = '2018 Peter Kahl';
+      $data['license']      = 'Apache-2';
       file_put_contents($CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE));
       return;
     }
@@ -122,9 +126,10 @@ class SoftSpokenSage {
     $LocalFile = __DIR__ .'/data.json';
     if (file_exists($LocalFile)) {
       $data = json_decode(file_get_contents($LocalFile), true);
-      $this->browsers = $data['browsers'];
-      $this->osystems = $data['osystems'];
-      $this->epoch    = $data['epoch'];
+      $this->browsers   = $data['browsers'];
+      $this->osystems   = $data['osystems'];
+      $this->released   = $data['released'];
+      $this->last_check = $data['released'];
       return;
     }
     throw new Exception('No data files found');
@@ -150,9 +155,8 @@ class SoftSpokenSage {
     );
 
     $this->browsers = array_merge($this->browsers, $extra);
-    $this->epoch    = time();
-
-    return true;
+    $max = max($fox['released'], $chr['released'], $this->released);
+    $this->released = $max;
   }
 
   #===================================================================
@@ -176,8 +180,8 @@ class SoftSpokenSage {
     if (array_key_exists($br, $this->$browsers)) {
       return array(
         'version'    => $this->$browsers[$br],
-        'released'   => $this->epoch,
-        'last_check' => $this->epoch,
+        'released'   => $this->released,
+        'last_check' => $this->last_check,
       );
     }
 
