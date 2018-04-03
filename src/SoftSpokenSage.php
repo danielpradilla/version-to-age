@@ -173,9 +173,9 @@ class SoftSpokenSage {
       }
     }
 
-    if (array_key_exists($br, $this->$browsers)) {
+    if (array_key_exists($br, $this->browsers)) {
       return array(
-        'version'    => $this->$browsers[$br],
+        'version'    => $this->browsers[$br],
         'released'   => $this->released,
         'last_check' => $this->last_check,
       );
@@ -186,15 +186,15 @@ class SoftSpokenSage {
 
   #===================================================================
 
-  public static function getBrCurrentVer($br) {
+  public function getBrCurrentVer($br) {
 
-    $br = self::strlower($br);
+    $br = $this->strlower($br);
 
     if ($br == '') {
       return '';
     }
 
-    $found = self::GetBrowserInfo($br);
+    $found = $this->GetBrowserInfo($br);
 
     if (!empty($found['version'])) {
       return $found['version'];
@@ -205,26 +205,26 @@ class SoftSpokenSage {
 
   #===================================================================
 
-  public static function getOsCurrentVer($os) {
+  public function getOsCurrentVer($os) {
 
-    $os = self::strlower($os);
+    $os = $this->strlower($os);
 
     if ($os == '') {
       return '';
     }
 
-    if (!array_key_exists($os, self::$osystems)) {
+    if (!array_key_exists($os, $this->osystems)) {
       return '';
     }
 
-    return self::$osystems[$os];
+    return $this->osystems[$os];
   }
 
   #===================================================================
 
-  public static function isBrOutdated($name, $ver = '') {
+  public function isBrOutdated($name, $ver = '') {
 
-    $name = self::strlower($name);
+    $name = $this->strlower($name);
 
     if ($name == '' || $ver == '') {
       return array(
@@ -233,7 +233,7 @@ class SoftSpokenSage {
       );
     }
 
-    $master = self::getBrCurrentVer($name);
+    $master = $thus->getBrCurrentVer($name);
 
     if (empty($master)) {
       return array(
@@ -242,7 +242,7 @@ class SoftSpokenSage {
       );
     }
 
-    $outdated = self::VersionDistance($ver, $master);
+    $outdated = $this->VersionDistance($ver, $master);
 
     if ($outdated > 1) {
       return array(
@@ -259,9 +259,9 @@ class SoftSpokenSage {
 
   #===================================================================
 
-  public static function isOsOutdated($name, $ver = '') {
+  public function isOsOutdated($name, $ver = '') {
 
-    $name = self::strlower($name);
+    $name = $this->strlower($name);
 
     if ($name == '' || $ver == '') {
       return array(
@@ -270,7 +270,7 @@ class SoftSpokenSage {
       );
     }
 
-    if (!array_key_exists($name, self::$osystems)) {
+    if (!array_key_exists($name, $this->osystems)) {
       return array(
         'bool'   => false, # uncommon OS
         'factor' => 0,
@@ -331,7 +331,7 @@ class SoftSpokenSage {
       );
     }
 
-    $outdated = self::VersionDistance($ver, self::$osystems[$name]);
+    $outdated = $this->VersionDistance($ver, self::$osystems[$name]);
 
     if ($outdated > 1) {
       return array(
@@ -397,7 +397,7 @@ class SoftSpokenSage {
 
   #===================================================================
 
-  public static function getLatestVersionChrome() {
+  public function getLatestVersionChrome() {
 
     $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_CHROME_STABLE.json';
 
@@ -501,7 +501,7 @@ class SoftSpokenSage {
 
   #===================================================================
 
-  public static function getEpochFirefoxVersion($ver) {
+  public function getEpochFirefoxVersion($ver) {
     $new = array();
     $this->curlm->ForcedCacheMaxAge = -1;
     $answer = $this->curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/'. $ver .'/');
