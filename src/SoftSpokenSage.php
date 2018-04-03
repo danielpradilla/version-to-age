@@ -148,15 +148,11 @@ class SoftSpokenSage {
     $chr = $this->getLatestVersionChrome();
     $fox = $this->getLatestVersionFirefox();
 
-    $extra = array(
-      'chrome'  => $chr['version'],
-      'crios'   => $chr['version'],
-      'firefox' => $fox['version'],
-    );
+    $this->browsers['chrome']  = $chr['version'];
+    $this->browsers['crios']   = $chr['version'];
+    $this->browsers['firefox'] = $fox['version'];
 
-    $this->browsers = array_merge($this->browsers, $extra);
-    $max = max($fox['released'], $chr['released'], $this->released);
-    $this->released = $max;
+    $this->released = max($fox['released'], $chr['released'], $this->released);
   }
 
   #===================================================================
