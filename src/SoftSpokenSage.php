@@ -129,7 +129,7 @@ class SoftSpokenSage {
       $this->browsers   = $data['browsers'];
       $this->osystems   = $data['osystems'];
       $this->released   = $data['released'];
-      $this->last_check = $data['released'];
+      $this->last_check = time();
       return;
     }
     throw new Exception('No data files found');
