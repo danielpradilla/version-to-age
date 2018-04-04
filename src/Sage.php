@@ -178,6 +178,31 @@ class Sage {
 
   #===================================================================
 
+  public function GetAgeOs($name, $ver) {
+    if (array_key_exists($ver, $this->osystems[$name])) {
+      return time() - $this->osystems[$name][$ver];
+    }
+    $temp = $this->osystems[$name];
+    $temp = array_flip($temp);
+    foreach ($temp as $time => $str) {
+      $temp[$time] = $this->Str2Val($str);
+    }
+  }
+
+  #===================================================================
+
+  private function Str2Val($str) {
+    for ($n = 0; $n < 2; $n++) {
+      if (substr_count($str, '.') < 2) {
+        $str .= '.0';
+      }
+    }
+    list($int, $frs, $sec) = explode('.', $str);
+    return $int + $frs/10 + $sec/100;
+  }
+
+  #===================================================================
+
   /**
    * Returns name of the class.
    * @return string
