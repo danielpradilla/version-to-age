@@ -77,13 +77,13 @@ class Sage {
   private $osystems;
 
   /**
-   * Epoch when data was released
+   * Epoch when data was last changed.
    * @var integer
    */
   private $released;
 
   /**
-   * Epoch when the system checked for data
+   * Epoch when the system checked for data.
    * @var integer
    */
   private $last_check;
@@ -111,9 +111,9 @@ class Sage {
     }
     #----------------------------------
     # Local cache
-    $CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
-    if (!$force && file_exists($CacheFile) && filemtime($CacheFile) > time()-86400) {
-      $data = json_decode(file_get_contents($CacheFile), true);
+    $this->CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
+    if (!$force && file_exists($this->CacheFile) && filemtime($this->CacheFile) > time()-86400) {
+      $data = json_decode(file_get_contents($this->CacheFile), true);
       $this->browsers   = $data['browsers'];
       $this->osystems   = $data['osystems'];
       $this->released   = $data['released'];
@@ -138,16 +138,23 @@ class Sage {
       #--------------------------------
       # Latest browser data
       $this->GetBrowserInfoAll();
-      $data['browsers']  = $this->browsers;
-      $data['released']  = max($this->released, $data['released']);
-      $data['homepage']  = 'https://github.com/peterkahl/Sage';
-      $data['copyright'] = '2018 Peter Kahl';
-      $data['license']   = 'Apache-2.0';
-      file_put_contents($CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
+      $this->SaveData();
       return;
     }
 
     $this->UseLocalData();
+  }
+
+  #===================================================================
+
+  private function SaveData() {
+    $data['browsers']  = $this->browsers;
+    $data['osystems']  = $this->osystems;
+    $data['released']  = $this->released;
+    $data['homepage']  = 'https://github.com/peterkahl/Sage';
+    $data['copyright'] = '2018 Peter Kahl';
+    $data['license']   = 'Apache-2.0';
+    file_put_contents($this->CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
   }
 
   #===================================================================
