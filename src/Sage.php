@@ -22,7 +22,19 @@ class Sage {
    * GitHub URL to fetch latest data
    * @var string
    */
-  const URLGITJSON = 'https://github.com/peterkahl/Sage/src/data.json';
+  const URLA = 'https://github.com/peterkahl/Sage/src/data.json';
+
+  /**
+   * URL to fetch latest data on Chrome
+   * @var string
+   */
+  const URLB = 'http://omahaproxy.appspot.com/all';
+
+  /**
+   * URL to fetch latest data on Firefox
+   * @var string
+   */
+  const URLC = 'https://ftp.mozilla.org/pub/firefox/releases/';
 
   /**
    * Path of cache directory.
@@ -108,7 +120,7 @@ class Sage {
     $this->curlm->CacheDir = $this->CacheDir;
     $this->curlm->ca_file  = $this->CAbundle;
     $this->curlm->ForcedCacheMaxAge = 2*86400;
-    $answer = $this->curlm->Request(self::URLGITJSON, 'GET', array(), $this->force);
+    $answer = $this->curlm->Request(self::URLA, 'GET', array(), $this->force);
     $body   = $answer['body'];
     $status = $answer['status'];
     unset($answer);
@@ -459,7 +471,7 @@ class Sage {
     }
 
     $this->curlm->ForcedCacheMaxAge = -1;
-    $answer = $this->curlm->Request('http://omahaproxy.appspot.com/all'); # CSV file
+    $answer = $this->curlm->Request(self::URLB); # CSV file
     $body   = $answer['body'];
     $status = $answer['status'];
     unset($answer);
@@ -540,7 +552,7 @@ class Sage {
   public function getAllVersionsFirefox() {
     $new = array();
     $this->curlm->ForcedCacheMaxAge = -1;
-    $answer = $this->curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/');
+    $answer = $this->curlm->Request(self::URLC);
     $body   = $answer['body'];
     $status = $answer['status'];
     unset($answer);
@@ -563,13 +575,14 @@ class Sage {
   #===================================================================
 
   /**
-   *
-   *
+   * Returns release date (epoch) for given Firefox version.
+   * @param  string $ver
+   * @return integer
    */
   public function getEpochFirefoxVersion($ver) {
     $new = array();
     $this->curlm->ForcedCacheMaxAge = -1;
-    $answer = $this->curlm->Request('https://ftp.mozilla.org/pub/firefox/releases/'. $ver .'/');
+    $answer = $this->curlm->Request(self::URLC . $ver .'/');
     $body   = $answer['body'];
     $status = $answer['status'];
     unset($answer);
