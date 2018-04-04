@@ -186,7 +186,10 @@ class Sage {
     $temp = array_flip($temp);
     $new = array();
     foreach ($temp as $str => $time) {
-      $new[$time] = $this->Str2Val($str);
+      $new[] = array(
+                      0 => $this->Str2Val($str),
+                      1 => $time,
+                    );
     }
   }
 
