@@ -1,19 +1,19 @@
 {
 "released":1522577158,
-"url":"https://github.com/peterkahl/Sage",
+"homepage":"https://github.com/peterkahl/Sage",
 "copyright":"2018 Peter Kahl",
-"license":"Apache-2",
+"license":"Apache-2.0",
 "browsers":[
     {
       "crios":"59.0",
       "chrome":"59.0",
       "edge":"40.15063",
-      "explorer":"11.0.46",
+      "explorer":"11.0",
       "firefox":"57.0",
-      "lunascape":"6.15.0",
-      "maxthon":"5.1.2",
+      "lunascape":"6.15",
+      "maxthon":"5.1",
       "mobile_safari":"11.0",
-      "safari":"11.0.1",
+      "safari":"11.0",
       "netsurf":"3.7",
       "opera":"49.0",
       "samsungbrowser":"6.2",
@@ -24,7 +24,7 @@
     {
       "android":"8.0",
       "ios":"11.3",
-      "macos":"10.13.2",
+      "macos":"10.13",
       "windows":"10.0"
     }
   ]
