@@ -137,7 +137,7 @@ class Sage {
       $data['homepage']  = 'https://github.com/peterkahl/Sage';
       $data['copyright'] = '2018 Peter Kahl';
       $data['license']   = 'Apache-2.0';
-      file_put_contents($CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE));
+      file_put_contents($CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
       return;
     }
     
