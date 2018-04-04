@@ -347,44 +347,51 @@ class Sage {
       #  5.0 ..... 2000
       if (version_compare($ver, '10.0', '>=')) {
         return array(
-          'bool'   => false, # current
-          'factor' => 0,
+          'bool'     => false, # current
+          'factor'   => 0,
+          'released' => 1438128000, # 29 July 2015
         );
       }
       if (version_compare($ver, '6.3', '>=')) { # Windows 8.1
         return array(
-          'bool'   => false,
-          'factor' => .5,
+          'bool'     => false,
+          'factor'   => .5,
+          'released' => 1396915200, # 8 April 2014
         );
       }
       if (version_compare($ver, '6.2', '>=')) { # Windows 8.0
         return array(
-          'bool'   => false,
-          'factor' => .81,
+          'bool'     => false,
+          'factor'   => .81,
+          'released' => 1351209600, # 26 October 2012
         );
       }
       if (version_compare($ver, '6.1', '>=')) { # Windows 7.0
         return array(
-          'bool'   => false,
-          'factor' => .88,
+          'bool'     => false,
+          'factor'   => .88,
+          'released' => 1256169600, # 22 Oct 2009
         );
       }
       if (version_compare($ver, '6.0', '>=')) { # Vista
         return array(
-          'bool'   => true,
-          'factor' => 4,
+          'bool'     => true,
+          'factor'   => 4,
+          'released' => 1164844800, # 30 Nov 2006
         );
       }
       if (version_compare($ver, '5.2', '>=')) { # XP
         return array(
-          'bool'   => true,
-          'factor' => 5,
+          'bool'     => true,
+          'factor'   => 5,
+          'released' => 1048809600, # 28 March 2003
         );
       }
-      # Older
+      # Older, use default
       return array(
-        'bool'   => true,
-        'factor' => 6,
+        'bool'     => true,
+        'factor'   => 6,
+        'released' => 946684800, # 1 Jan 2000
       );
     }
 
