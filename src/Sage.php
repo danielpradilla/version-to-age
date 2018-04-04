@@ -57,6 +57,18 @@ class Sage {
    * @var array
    */
   private $osystems;
+
+  /**
+   * Epoch when data was released
+   * @var integer
+   */
+  private $released;
+
+  /**
+   * Epoch when the system checked for data
+   * @var integer
+   */
+  private $last_check;
   
   #===================================================================
 
@@ -122,6 +134,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   * Loads data from local file.
+   * @throws \Exception
+   */
   private function UseLocalData() {
     $LocalFile = __DIR__ .'/data.json';
     if (file_exists($LocalFile)) {
@@ -137,12 +153,20 @@ class Sage {
 
   #===================================================================
 
+  /**
+   * Returns name of the class.
+   * @return string
+   */
   public function GetClassName() {
     return __CLASS__;
   }
 
   #===================================================================
 
+  /**
+   * Fetches latest data on Firefox and Chrome and adds these
+   * to the browser array.
+   */
   private function GetBrowserInfoAll() {
 
     $chr = $this->getLatestVersionChrome();
@@ -157,6 +181,11 @@ class Sage {
 
   #===================================================================
 
+  /**
+   * Returns data on specific browser.
+   * @param  string $br
+   * @return array
+   */
   private function GetBrowserInfo($br) {
 
     $br = $this->strlower($br);
@@ -186,6 +215,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   public function getBrCurrentVer($br) {
 
     $br = $this->strlower($br);
@@ -205,6 +238,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   public function getOsCurrentVer($os) {
 
     $os = $this->strlower($os);
@@ -222,6 +259,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   public function isBrOutdated($name, $ver = '') {
 
     $name = $this->strlower($name);
@@ -259,6 +300,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   public function isOsOutdated($name, $ver = '') {
 
     $name = $this->strlower($name);
@@ -348,6 +393,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   public static function VersionDistance($test, $master) {
 
     if ($test === $master) {
@@ -397,6 +446,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   public function getLatestVersionChrome() {
 
     $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_CHROME_STABLE.json';
@@ -451,6 +504,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   public function getLatestVersionFirefox() {
 
     $filename = $this->CacheDir .'/'. self::FILEPREFIX .'VER_FIREFOX_STABLE.json';
@@ -476,6 +533,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   public function getAllVersionsFirefox() {
     $new = array();
     $this->curlm->ForcedCacheMaxAge = -1;
@@ -501,6 +562,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   public function getEpochFirefoxVersion($ver) {
     $new = array();
     $this->curlm->ForcedCacheMaxAge = -1;
@@ -526,6 +591,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   public static function getBrowserLogo($browser, $pixelDim) {
     $browser = self::strlower($browser);
     $file = __DIR__ .'/svg/browser/'. $browser .'.svg';
@@ -537,6 +606,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   public static function getOSLogo($os, $pixelDim) {
     $os = self::strlower($os);
     $file = __DIR__ .'/svg/os/'. $os .'.svg';
@@ -548,12 +621,20 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   private static function strlower($str) {
     return str_replace(' ', '_', strtolower($str));
   }
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   private static function StripHtmlTags($str) {
 
     $str = html_entity_decode($str);
@@ -582,6 +663,10 @@ class Sage {
 
   #===================================================================
 
+  /**
+   *
+   *
+   */
   private static function EndExplode($glue, $str) {
     if (strpos($str, $glue) === false) {
       return $str;
