@@ -37,6 +37,12 @@ class Sage {
   const URLC = 'https://ftp.mozilla.org/pub/firefox/releases/';
 
   /**
+   * Oldest date possible.
+   * @var integer
+   */
+  const EPOCH_ZERO = 946684800; # 1 Jan 2000
+
+  /**
    * Path of cache directory.
    * @var string
    */
@@ -140,7 +146,7 @@ class Sage {
       file_put_contents($CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
       return;
     }
-    
+
     $this->UseLocalData();
   }
 
@@ -395,18 +401,18 @@ class Sage {
       );
     }
 
-    $outdated = $this->VersionDistance($ver, self::$osystems[$name]);
+    $distance = $this->VersionDistance($ver, self::$osystems[$name]);
 
-    if ($outdated > 1) {
-      return array(
-        'bool'   => true,
-        'factor' => $outdated,
-      );
+    if ($distance > 1) {
+      $outdated = true;
+    }
+    else {
+      $outdated = false;
     }
 
     return array(
-      'bool'   => false, # current
-      'factor' => $outdated,
+      'bool'   => $outdated,
+      'factor' => $distance,
     );
   }
 
