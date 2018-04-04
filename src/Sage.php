@@ -502,7 +502,7 @@ class Sage {
         'last_check' => time(),
       );
 
-      FilePutContents($filename, json_encode($arr), LOCK_EX);
+      FilePutContents($filename, json_encode($arr, JSON_UNESCAPED_UNICODE), LOCK_EX);
       return $arr;
     }
 
@@ -539,7 +539,7 @@ class Sage {
       'last_check' => time(),
     );
 
-    FilePutContents($filename, json_encode($arr), LOCK_EX);
+    FilePutContents($filename, json_encode($arr, JSON_UNESCAPED_UNICODE), LOCK_EX);
     return $arr;
   }
 
