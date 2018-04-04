@@ -184,8 +184,9 @@ class Sage {
     }
     $temp = $this->osystems[$name];
     $temp = array_flip($temp);
-    foreach ($temp as $time => $str) {
-      $temp[$time] = $this->Str2Val($str);
+    $new = array();
+    foreach ($temp as $str => $time) {
+      $new[$time] = $this->Str2Val($str);
     }
   }
 
