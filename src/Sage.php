@@ -134,9 +134,9 @@ class Sage {
       $this->GetBrowserInfoAll();
       $data['browsers']  = $this->browsers;
       $data['released']  = max($this->released, $data['released']);
-      $data['url']       = 'https://github.com/peterkahl/Sage';
+      $data['homepage']  = 'https://github.com/peterkahl/Sage';
       $data['copyright'] = '2018 Peter Kahl';
-      $data['license']   = 'Apache-2';
+      $data['license']   = 'Apache-2.0';
       file_put_contents($CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE));
       return;
     }
