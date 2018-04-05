@@ -181,7 +181,7 @@ class Sage {
 
   public function GetAgeOs($name, $ver) {
     if (array_key_exists($ver, $this->osystems[$name])) {
-      return time() - $this->osystems[$name][$ver];
+      return $this->DayTime() - $this->osystems[$name][$ver];
     }
     $temp = $this->osystems[$name];
     $temp = array_flip($temp);
@@ -199,7 +199,7 @@ class Sage {
         $low = array('time'=>$time, 'val'=>$val);
       }
       elseif ($val == $verNorm) {
-        return time() - $time;
+        return $this->DayTime() - $time;
       }
       else {
         $high = array('time'=>$time, 'val'=>$val);
@@ -213,7 +213,7 @@ class Sage {
     $val   = $low['val'];
     $valSpan  = $high['val'] - $low['val'];
     $incrv = $valSpan/10;
-    for ($tenth = 1; $tenth < 10; $tenth++) {
+    for ($step = 1; $step < 10; $step++) {
       $time += $incrt;
       $val  += $incrv;
       if ($val < $verNorm) {
@@ -223,7 +223,7 @@ class Sage {
         break;
       }
     }
-    return time() - $epoch;
+    return $this->DayTime() - $epoch;
   }
 
   #===================================================================
@@ -236,6 +236,17 @@ class Sage {
     }
     list($int, $frs, $sec) = explode('.', $str);
     return $int + $frs/($scale*1.01) + $sec/($scale*$scale*1.01);
+  }
+
+  #===================================================================
+
+  /**
+   * Epoch timestamp with 1-day precision.
+   * @return integer
+   */
+  private function DayTime() {
+    $mod = time() %% 86400;
+    return time() - $mod;
   }
 
   #===================================================================
