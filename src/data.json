@@ -5,14 +5,18 @@
 "license":"Apache-2.0",
 "browsers":[
     {
-      "crios":"59.0",
-      "chrome":"59.0",
+      "chrome":
+      {
+        "62.0":1508198400,
+        "63.0":1512432000,
+        "64.0":1516752000,
+        "65.0":1520294400
+      },
       "edge":"40.15063",
       "explorer":"11.0",
       "firefox":"57.0",
       "lunascape":"6.15",
       "maxthon":"5.1",
-      "mobile_safari":"11.0",
       "safari":"11.0",
       "netsurf":"3.7",
       "opera":"49.0",
