@@ -181,11 +181,9 @@ class Sage {
 
   public function GetAgeOs($name, $ver) {
     if (array_key_exists($ver, $this->osystems[$name])) {
-      return $this->DayTime() - $this->osystems[$name][$ver];
+      return time() - $this->osystems[$name][$ver];
     }
     $temp = $this->osystems[$name];
-    $temp = array_flip($temp);
-    $new = array();
     $scale = array(
       'android' => 10,
       'ios'     => 20,
@@ -193,13 +191,13 @@ class Sage {
       'windows' => 5,
     );
     $verNorm = $this->Str2Val($ver, $scale[$name]);
-    foreach ($temp as $time => $str) {
+    foreach ($temp as $str => $time) {
       $val = $this->Str2Val($str, $scale[$name]);
       if ($val < $verNorm) {
         $low = array('time'=>$time, 'val'=>$val);
       }
       elseif ($val == $verNorm) {
-        return $this->DayTime() - $time;
+        return time() - $time;
       }
       else {
         $high = array('time'=>$time, 'val'=>$val);
@@ -223,30 +221,17 @@ class Sage {
         break;
       }
     }
-    return $this->DayTime() - $epoch;
+    return time() - $epoch;
   }
 
   #===================================================================
 
   private function Str2Val($str, $scale = 10) {
-    for ($n = 0; $n < 2; $n++) {
-      if (substr_count($str, '.') < 2) {
-        $str .= '.0';
-      }
+    if (substr_count($str, '.') < 2) {
+      $str .= '.0';
     }
-    list($int, $frs, $sec) = explode('.', $str);
-    return $int + $frs/($scale*1.01) + $sec/($scale*$scale*1.01);
-  }
-
-  #===================================================================
-
-  /**
-   * Epoch timestamp with 1-day precision.
-   * @return integer
-   */
-  private function DayTime() {
-    $mod = time() %% 86400;
-    return time() - $mod;
+    list($int, $frs) = explode('.', $str);
+    return $int + $frs/$scale;
   }
 
   #===================================================================
