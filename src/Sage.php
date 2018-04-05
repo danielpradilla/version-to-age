@@ -37,7 +37,8 @@ class Sage {
   const URLC = 'https://ftp.mozilla.org/pub/firefox/releases/';
 
   /**
-   * Oldest date possible.
+   * Oldest date of interest.
+   * Anything before this doesn't matter.
    * @var integer
    */
   const EPOCH_ZERO = 946684800; # 1 Jan 2000
@@ -185,24 +186,56 @@ class Sage {
     $temp = $this->osystems[$name];
     $temp = array_flip($temp);
     $new = array();
-    foreach ($temp as $str => $time) {
-      $new[] = array(
-                      0 => $this->Str2Val($str),
-                      1 => $time,
-                    );
+    $scale = array(
+      'android' => 10,
+      'ios'     => 20,
+      'macos'   => 20,
+      'windows' => 5,
+    );
+    $verNorm = $this->Str2Val($ver, $scale[$name]);
+    foreach ($temp as $time => $str) {
+      $val = $this->Str2Val($str, $scale[$name]);
+      if ($val < $verNorm) {
+        $low = array('time'=>$time, 'val'=>$val);
+      }
+      elseif ($val == $verNorm) {
+        return time() - $time;
+      }
+      else {
+        $high = array('time'=>$time, 'val'=>$val);
+        break;
+      }
     }
+    #----
+    $timeSpan = $high['time'] - $low['time'];
+    $incrt = (integer) $timeSpan/10;
+    $time  = $low['time'];
+    $val   = $low['val'];
+    $valSpan  = $high['val'] - $low['val'];
+    $incrv = $valSpan/10;
+    for ($tenth = 1; $tenth < 10; $tenth++) {
+      $time += $incrt;
+      $val  += $incrv;
+      if ($val < $verNorm) {
+        $epoch = $time;
+      }
+      else {
+        break;
+      }
+    }
+    return time() - $epoch;
   }
 
   #===================================================================
 
-  private function Str2Val($str) {
+  private function Str2Val($str, $scale = 10) {
     for ($n = 0; $n < 2; $n++) {
       if (substr_count($str, '.') < 2) {
         $str .= '.0';
       }
     }
     list($int, $frs, $sec) = explode('.', $str);
-    return $int + $frs/10 + $sec/100;
+    return $int + $frs/($scale*1.01) + $sec/($scale*$scale*1.01);
   }
 
   #===================================================================
