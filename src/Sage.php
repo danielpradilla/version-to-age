@@ -184,7 +184,19 @@ class Sage {
     if (array_key_exists($ver, $this->osystems[$name])) {
       return time() - $this->osystems[$name][$ver];
     }
-    $temp = $this->osystems[$name];
+    if (substr_count($ver, '.') > 1) {
+      $arr = explode('.', $ver);
+      $ver = $arr[0] .'.'. $arr[1];
+      if (array_key_exists($ver, $this->osystems[$name])) {
+        return time() - $this->osystems[$name][$ver];
+      }
+    }
+    $temp  = $this->osystems[$name];
+    $new   = array();
+    $new['0.0'] = self::EPOCH_ZERO;
+    foreach ($temp as $str => $time) {
+      $new[$str] = $time;
+    }
     $scale = array(
       'android' => 10,
       'ios'     => 20,
@@ -192,7 +204,7 @@ class Sage {
       'windows' => 5,
     );
     $verNorm = $this->Str2Val($ver, $scale[$name]);
-    foreach ($temp as $str => $time) {
+    foreach ($new as $str => $time) {
       $val = $this->Str2Val($str, $scale[$name]);
       if ($val < $verNorm) {
         $low = array('time'=>$time, 'val'=>$val);
@@ -207,12 +219,12 @@ class Sage {
     }
     #----
     $timeSpan = $high['time'] - $low['time'];
-    $incrt = (integer) $timeSpan/10;
+    $incrt = (integer) $timeSpan/20;
     $time  = $low['time'];
     $val   = $low['val'];
     $valSpan  = $high['val'] - $low['val'];
-    $incrv = $valSpan/10;
-    for ($step = 1; $step < 10; $step++) {
+    $incrv = $valSpan/20;
+    for ($step = 1; $step < 20; $step++) {
       $time += $incrt;
       $val  += $incrv;
       if ($val < $verNorm) {
