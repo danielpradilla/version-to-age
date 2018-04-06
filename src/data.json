@@ -1,6 +1,7 @@
 {
 "released":1522989369,
 "homepage":"https://github.com/peterkahl/Sage",
+"description":"Estimates age of browser and OS software.",
 "copyright":"2018 Peter Kahl",
 "license":"Apache-2.0",
 "browsers":[
