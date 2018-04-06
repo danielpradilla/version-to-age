@@ -38,10 +38,10 @@ class Sage {
 
   /**
    * Oldest date of interest.
-   * Anything before this doesn't matter.
+   * Anything before this doesn't matter, outside of our range.
    * @var integer
    */
-  const EPOCH_ZERO = 946684800; # 1 Jan 2000
+  const EPOCH_ZERO = 1199145600; # 1 Jan 2008
 
   /**
    * Path of cache directory.
@@ -149,12 +149,13 @@ class Sage {
   #===================================================================
 
   private function SaveData() {
-    $data['browsers']  = $this->browsers;
-    $data['osystems']  = $this->osystems;
-    $data['released']  = $this->released;
-    $data['homepage']  = 'https://github.com/peterkahl/Sage';
-    $data['copyright'] = '2018 Peter Kahl';
-    $data['license']   = 'Apache-2.0';
+    $data['browsers']    = $this->browsers;
+    $data['osystems']    = $this->osystems;
+    $data['released']    = $this->released;
+    $data['homepage']    = 'https://github.com/peterkahl/Sage';
+    $data['description'] = 'Estimates age of browser and OS software.';
+    $data['copyright']   = 'Peter Kahl';
+    $data['license']     = 'Apache-2.0';
     file_put_contents($this->CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
   }
 
