@@ -190,7 +190,7 @@ class Sage {
       $arr = explode('.', $ver);
       $ver = $arr[0] .'.'. $arr[1];
       if (array_key_exists($ver, $this->browsers[$name])) {
-        return time() - $this->osystems[$name][$ver];
+        return time() - $this->browsers[$name][$ver];
       }
     }
     $temp = $this->browsers[$name];
@@ -279,17 +279,15 @@ class Sage {
   #===================================================================
 
   private function Str2Val($str, $name = '') {
-    if (substr_count($str, '.') < 2) {
+    if (substr_count($str, '.') < 1) {
       $str .= '.0';
     }
     $arnm = array(
-      'android' => 10,
-      'ios'     => 20,
-      'macos'   => 20,
-      'windows' => 5,
-      'surfmonkey' => 50,
-      'macos'   => 20,
-      'windows' => 5,
+      'ios'       => 20,
+      'macos'     => 20,
+      'windows'   =>  5,
+      'seamonkey' => 55,
+      'lunascape' => 20,
     );
     $scale = 10;
     if (array_key_exists($name, $arnm)) {
