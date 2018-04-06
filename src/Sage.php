@@ -149,13 +149,15 @@ class Sage {
   #===================================================================
 
   private function SaveData() {
-    $data['browsers']    = $this->browsers;
-    $data['osystems']    = $this->osystems;
-    $data['released']    = $this->released;
-    $data['homepage']    = 'https://github.com/peterkahl/Sage';
-    $data['description'] = 'Estimates age of browser and OS software.';
-    $data['copyright']   = 'Peter Kahl';
-    $data['license']     = 'Apache-2.0';
+    $data = array(
+      'browsers'    => $this->browsers,
+      'osystems'    => $this->osystems,
+      'released'    => $this->released,
+      'homepage'    => 'https://github.com/peterkahl/Sage',
+      'description' => 'Estimates age of browser and OS software.',
+      'copyright'   => 'Peter Kahl',
+      'license'     => 'Apache-2.0',
+    );
     file_put_contents($this->CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
   }
 
