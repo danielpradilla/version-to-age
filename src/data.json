@@ -4,7 +4,7 @@
 "description":"Estimates age of browser and OS software.",
 "copyright":"2018 Peter Kahl",
 "license":"Apache-2.0",
-"browsers":[
+"data":[
     {
       "chrome":
       {
@@ -158,11 +158,7 @@
         "2.48":1501459200,
         "2.49":1509753600,
         "2.49.2":1518652800
-      }
-    }
-  ],
-"osystems":[
-    {
+      },
       "android":
       {
         "4.0":1318896000,
