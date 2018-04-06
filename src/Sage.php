@@ -180,6 +180,54 @@ class Sage {
     throw new Exception('No data files found');
   }
 
+  #==================================================================
+
+  public function GetAgeBr($name, $ver) {
+    if (array_key_exists($ver, $this->browsers[$name])) {
+      return time() - $this->browsers[$name][$ver];
+    }
+    if (substr_count($ver, '.') > 1) {
+      $arr = explode('.', $ver);
+      $ver = $arr[0] .'.'. $arr[1];
+      if (array_key_exists($ver, $this->browsers[$name])) {
+        return time() - $this->osystems[$name][$ver];
+      }
+    }
+    $temp = $this->browsers[$name];
+    $verNorm = $this->Str2Val($ver, $name);
+    foreach ($temp as $str => $time) {
+      $val = $this->Str2Val($str, $name);
+      if ($val < $verNorm) {
+        $low = array('time'=>$time, 'val'=>$val);
+      }
+      elseif ($val == $verNorm) {
+        return time() - $time;
+      }
+      else {
+        $high = array('time'=>$time, 'val'=>$val);
+        break;
+      }
+    }
+    #----
+    $timeSpan = $high['time'] - $low['time'];
+    $incrt = (integer) $timeSpan/20;
+    $time  = $low['time'];
+    $val   = $low['val'];
+    $valSpan  = $high['val'] - $low['val'];
+    $incrv = $valSpan/20;
+    for ($step = 1; $step < 20; $step++) {
+      $time += $incrt;
+      $val  += $incrv;
+      if ($val < $verNorm) {
+        $epoch = $time;
+      }
+      else {
+        break;
+      }
+    }
+    return time() - $epoch;
+  }
+
   #===================================================================
 
   public function GetAgeOs($name, $ver) {
@@ -194,19 +242,8 @@ class Sage {
       }
     }
     $temp  = $this->osystems[$name];
-    $new   = array();
-    $new['0.0'] = self::EPOCH_ZERO;
-    foreach ($temp as $str => $time) {
-      $new[$str] = $time;
-    }
-    $scale = array(
-      'android' => 10,
-      'ios'     => 20,
-      'macos'   => 20,
-      'windows' => 5,
-    );
     $verNorm = $this->Str2Val($ver, $scale[$name]);
-    foreach ($new as $str => $time) {
+    foreach ($temp as $str => $time) {
       $val = $this->Str2Val($str, $scale[$name]);
       if ($val < $verNorm) {
         $low = array('time'=>$time, 'val'=>$val);
@@ -241,12 +278,28 @@ class Sage {
 
   #===================================================================
 
-  private function Str2Val($str, $scale = 10) {
+  private function Str2Val($str, $name = '') {
     if (substr_count($str, '.') < 2) {
       $str .= '.0';
     }
-    list($int, $frs) = explode('.', $str);
-    return $int + $frs/$scale;
+    $arnm = array(
+      'android' => 10,
+      'ios'     => 20,
+      'macos'   => 20,
+      'windows' => 5,
+      'surfmonkey' => 50,
+      'macos'   => 20,
+      'windows' => 5,
+    );
+    $scale = 10;
+    if (array_key_exists($name, $arnm)) {
+      $scale = $arnm[$name];
+    }
+    $arr = explode('.', $str);
+    if ($name == 'edge') {
+      return $arr[1];
+    }
+    return $arr[0] + $arr[1]/$scale;
   }
 
   #===================================================================
