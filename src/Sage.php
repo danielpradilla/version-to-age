@@ -66,16 +66,10 @@ class Sage {
   public $FetchRemoteData = true;
 
   /**
-   * Most recent version of browsers.
+   * Array holding data.
    * @var array
    */
-  private $browsers;
-
-  /**
-   * Most recent version of OS.
-   * @var array
-   */
-  private $osystems;
+  private $data;
 
   /**
    * Epoch when data was last changed.
@@ -114,10 +108,9 @@ class Sage {
     # Local cache
     $this->CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
     if (!$force && file_exists($this->CacheFile) && filemtime($this->CacheFile) > time()-86400) {
-      $data = json_decode(file_get_contents($this->CacheFile), true);
-      $this->browsers   = $data['browsers'];
-      $this->osystems   = $data['osystems'];
-      $this->released   = $data['released'];
+      $temp = json_decode(file_get_contents($this->CacheFile), true);
+      $this->data       = $temp['data'];
+      $this->released   = $temp['released'];
       $this->last_check = time();
       return;
     }
@@ -132,9 +125,8 @@ class Sage {
     $status = $answer['status'];
     unset($answer);
     if ($status == '200' && !empty($body)) {
-      $data = json_decode($body, true);
-      $this->browsers   = $data['browsers'];
-      $this->osystems   = $data['osystems'];
+      $temp = json_decode($body, true);
+      $this->data       = $temp['data'];
       $this->last_check = time();
       #--------------------------------
       # Latest browser data
@@ -149,16 +141,15 @@ class Sage {
   #===================================================================
 
   private function SaveData() {
-    $data = array(
-      'browsers'    => $this->browsers,
-      'osystems'    => $this->osystems,
+    $temp = array(
+      'data'        => $this->data,
       'released'    => $this->released,
       'homepage'    => 'https://github.com/peterkahl/Sage',
       'description' => 'Estimates age of browser and OS software.',
       'copyright'   => 'Peter Kahl',
       'license'     => 'Apache-2.0',
     );
-    file_put_contents($this->CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
+    file_put_contents($this->CacheFile, json_encode($temp, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
   }
 
   #===================================================================
@@ -170,10 +161,9 @@ class Sage {
   private function UseLocalData() {
     $LocalFile = __DIR__ .'/data.json';
     if (file_exists($LocalFile)) {
-      $data = json_decode(file_get_contents($LocalFile), true);
-      $this->browsers   = $data['browsers'];
-      $this->osystems   = $data['osystems'];
-      $this->released   = $data['released'];
+      $temp = json_decode(file_get_contents($LocalFile), true);
+      $this->data       = $temp['data'];
+      $this->released   = $temp['released'];
       $this->last_check = time();
       return;
     }
@@ -182,69 +172,21 @@ class Sage {
 
   #==================================================================
 
-  public function GetAgeBr($name, $ver) {
-    if (array_key_exists($ver, $this->browsers[$name])) {
-      return time() - $this->browsers[$name][$ver];
+  public function GetAge($name, $ver) {
+    if (array_key_exists($ver, $this->data[$name])) {
+      return time() - $this->data[$name][$ver];
     }
     if (substr_count($ver, '.') > 1) {
       $arr = explode('.', $ver);
       $ver = $arr[0] .'.'. $arr[1];
-      if (array_key_exists($ver, $this->browsers[$name])) {
-        return time() - $this->browsers[$name][$ver];
+      if (array_key_exists($ver, $this->data[$name])) {
+        return time() - $this->data[$name][$ver];
       }
     }
-    $temp = $this->browsers[$name];
+    $temp = $this->data[$name];
     $verNorm = $this->Str2Val($ver, $name);
     foreach ($temp as $str => $time) {
       $val = $this->Str2Val($str, $name);
-      if ($val < $verNorm) {
-        $low = array('time'=>$time, 'val'=>$val);
-      }
-      elseif ($val == $verNorm) {
-        return time() - $time;
-      }
-      else {
-        $high = array('time'=>$time, 'val'=>$val);
-        break;
-      }
-    }
-    #----
-    $timeSpan = $high['time'] - $low['time'];
-    $incrt = (integer) $timeSpan/20;
-    $time  = $low['time'];
-    $val   = $low['val'];
-    $valSpan  = $high['val'] - $low['val'];
-    $incrv = $valSpan/20;
-    for ($step = 1; $step < 20; $step++) {
-      $time += $incrt;
-      $val  += $incrv;
-      if ($val < $verNorm) {
-        $epoch = $time;
-      }
-      else {
-        break;
-      }
-    }
-    return time() - $epoch;
-  }
-
-  #===================================================================
-
-  public function GetAgeOs($name, $ver) {
-    if (array_key_exists($ver, $this->osystems[$name])) {
-      return time() - $this->osystems[$name][$ver];
-    }
-    if (substr_count($ver, '.') > 1) {
-      $arr = explode('.', $ver);
-      $ver = $arr[0] .'.'. $arr[1];
-      if (array_key_exists($ver, $this->osystems[$name])) {
-        return time() - $this->osystems[$name][$ver];
-      }
-    }
-    $temp  = $this->osystems[$name];
-    $verNorm = $this->Str2Val($ver, $scale[$name]);
-    foreach ($temp as $str => $time) {
-      $val = $this->Str2Val($str, $scale[$name]);
       if ($val < $verNorm) {
         $low = array('time'=>$time, 'val'=>$val);
       }
