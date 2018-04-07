@@ -127,6 +127,7 @@ class Sage {
     if ($status == '200' && !empty($body)) {
       $temp = json_decode($body, true);
       $this->data       = $temp['data'];
+      $this->released   = $temp['released'];
       $this->last_check = time();
       #--------------------------------
       # Latest browser data
@@ -164,7 +165,7 @@ class Sage {
       $temp = json_decode(file_get_contents($LocalFile), true);
       $this->data       = $temp['data'];
       $this->released   = $temp['released'];
-      $this->last_check = time();
+      $this->last_check = $temp['released'];;
       return;
     }
     throw new Exception('No data files found');
@@ -220,7 +221,7 @@ class Sage {
 
   #===================================================================
 
-  private function Str2Val($str, $name = '') {
+  private function Str2Val($str, $name) {
     if (substr_count($str, '.') < 1) {
       $str .= '.0';
     }
