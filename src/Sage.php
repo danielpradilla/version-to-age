@@ -185,14 +185,12 @@ class Sage {
       }
     }
     $temp = $this->data[$name];
-    $verNorm = $this->Str2Val($ver, $name);
+    $verNorm = $this->Str2float($ver, $name);
     foreach ($temp as $str => $time) {
-      $val = $this->Str2Val($str, $name);
+      $val = $this->Str2float($str, $name);
+      # We are comparing floats!
       if ($val < $verNorm) {
         $low = array('time'=>$time, 'val'=>$val);
-      }
-      elseif ($val == $verNorm) {
-        return time() - $time;
       }
       else {
         $high = array('time'=>$time, 'val'=>$val);
@@ -221,7 +219,7 @@ class Sage {
 
   #===================================================================
 
-  private function Str2Val($str, $name) {
+  private function Str2float($str, $name) {
     if (substr_count($str, '.') < 1) {
       $str .= '.0';
     }
@@ -240,7 +238,7 @@ class Sage {
     if ($name == 'edge') {
       return $arr[1];
     }
-    return $arr[0] + $arr[1]/$scale;
+    return (float) $arr[0] + $arr[1]/$scale;
   }
 
   #===================================================================
