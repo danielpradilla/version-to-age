@@ -5,24 +5,24 @@
  * @license    Apache License, Version 2.0, http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace peterkahl\Sage;
+namespace peterkahl\Version2age;
 
 use peterkahl\curlMaster\curlMaster;
 use \Exception;
 
-class Sage {
+class Version2age {
 
   /**
    * Filename prefix for cache files.
    * @var string
    */
-  const FILEPREFIX = 'SAGE_';
+  const FILEPREFIX = 'VER2AGE_';
 
   /**
    * GitHub URL to fetch latest data
    * @var string
    */
-  const URLA = 'https://github.com/peterkahl/Sage/src/data.json';
+  const URLA = 'https://github.com/peterkahl/Version2age/src/data.json';
 
   /**
    * URL to fetch latest data on Chrome
@@ -145,7 +145,7 @@ class Sage {
     $temp = array(
       'data'        => $this->data,
       'released'    => $this->released,
-      'homepage'    => 'https://github.com/peterkahl/Sage',
+      'homepage'    => 'https://github.com/peterkahl/Version2age',
       'description' => 'Estimates age of browser and OS software.',
       'copyright'   => 'Peter Kahl',
       'license'     => 'Apache-2.0',
