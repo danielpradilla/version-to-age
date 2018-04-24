@@ -3,7 +3,7 @@
  * Version To Age
  * Estimates age of browser and OS software.
  *
- * @version    2018-04-16 18:00:01 GMT
+ * @version    2018-04-24 14:00:00 GMT
  * @author     Peter Kahl <https://github.com/peterkahl>
  * @copyright  2018 Peter Kahl
  * @license    Apache License, Version 2.0
@@ -33,12 +33,6 @@ class Version2age {
    * @var string
    */
   const FILEPREFIX = 'VER2AGE_';
-
-  /**
-   * GitHub URL to fetch latest data
-   * @var string
-   */
-  const URLA = 'https://raw.githubusercontent.com/peterkahl/version-to-age/master/src/data.json';
 
   /**
    * URL to fetch latest data on Chrome
@@ -102,7 +96,6 @@ class Version2age {
   #===================================================================
 
   /**
-   * Constructor
    * Data array is created from local and remote sources.
    * Data array is updated if outdated.
    * Data are stored in cache.
@@ -111,7 +104,7 @@ class Version2age {
    *                            fresh data.
    * @throws \Exception
    */
-  public function __construct($force = false) {
+  private function Initialise($force = false) {
     if (!is_bool($force)) {
       throw new Exception('Illegal type argument force');
     }
@@ -119,6 +112,10 @@ class Version2age {
     if (!$this->FetchRemoteData) {
       $this->UseLocalData();
       return;
+    }
+    #----------------------------------
+    if (empty($this->CacheDir)) {
+      throw new Exception('Property CacheDir cannot be empty');
     }
     #----------------------------------
     # Local cache
@@ -130,41 +127,39 @@ class Version2age {
       $this->last_check = time();
       return;
     }
-    #----------------------------------
-    # Fetch from GitHub
-    $this->curlm = new curlMaster;
-    $this->curlm->CacheDir = $this->CacheDir;
-    $this->curlm->ca_file  = $this->CAbundle;
-    $this->curlm->ForcedCacheMaxAge = 2*86400;
-    $answer = $this->curlm->Request(self::URLA, 'GET', array(), $this->force);
-    $body   = $answer['body'];
-    $status = $answer['status'];
-    unset($answer);
-    if ($status == '200' && !empty($body)) {
-      $temp = json_decode($body, true);
-      $this->data       = $temp['data'];
-      $this->released   = $temp['released'];
-      $this->last_check = time();
-      #--------------------------------
-      # Latest browser data
-      $this->GetBrowserInfoAll();
-      $this->SaveData();
-      return;
-    }
-
     $this->UseLocalData();
+    #----------------------------------
+    if (empty($this->CAbundle)) {
+      throw new Exception('Property CAbundle cannot be empty');
+    }
+    #----------------------------------
+    $this->last_check = time();
+    $this->curlm = new curlMaster;
+    $this->curlm->ca_file  = $this->CAbundle;
+    $this->curlm->CacheDir = $this->CacheDir;
+    #----------------------------------
+    # Latest browser data
+    $temp = $this->getLatestVersionChrome();
+    if (!empty($temp)) {
+      $this->data['chrome'][$temp['version']] = $temp['released'];
+    }
+    $temp = $this->getLatestVersionFirefox();
+    if (!empty($temp)) {
+      $this->data['firefox'][$temp['version']] = $temp['released'];
+    }
+    $this->SaveData();
   }
 
   #===================================================================
 
   private function SaveData() {
     $temp = array(
-      'data'        => $this->data,
-      'released'    => $this->released,
-      'homepage'    => 'https://github.com/peterkahl/Version2age',
       'description' => 'Estimates age of browser and OS software.',
+      'homepage'    => 'https://github.com/peterkahl/Version2age',
       'copyright'   => 'Peter Kahl',
       'license'     => 'Apache-2.0',
+      'released'    => $this->released,
+      'data'        => $this->data,
     );
     file_put_contents($this->CacheFile, json_encode($temp, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
   }
@@ -190,6 +185,11 @@ class Version2age {
   #==================================================================
 
   public function GetAge($name, $ver) {
+
+    $this->Initialise();
+
+    $name = strtolower($name);
+
     if (array_key_exists($ver, $this->data[$name])) {
       return time() - $this->data[$name][$ver];
     }
@@ -212,6 +212,10 @@ class Version2age {
         $high = array('time'=>$time, 'val'=>$val);
         break;
       }
+    }
+    #----
+    if (empty($high) || empty($low)) {
+      return 0;
     }
     #----
     $timeSpan = $high['time'] - $low['time'];
