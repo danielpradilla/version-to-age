@@ -3,7 +3,7 @@
  * Version To Age
  * Estimates age of browser and OS software.
  *
- * @version    2018-04-24 14:00:00 GMT
+ * @version    2018-04-24 16:45:00 GMT
  * @author     Peter Kahl <https://github.com/peterkahl>
  * @copyright  2018 Peter Kahl
  * @license    Apache License, Version 2.0
@@ -45,13 +45,6 @@ class Version2age {
    * @var string
    */
   const URLC = 'https://ftp.mozilla.org/pub/firefox/releases/';
-
-  /**
-   * Oldest date of interest.
-   * Anything before this doesn't matter, outside of our range.
-   * @var integer
-   */
-  const EPOCH_ZERO = 1199145600; # 1 Jan 2008
 
   /**
    * Path of cache directory.
@@ -104,7 +97,7 @@ class Version2age {
    *                            fresh data.
    * @throws \Exception
    */
-  private function Initialise($force = false) {
+  public function Initialise($force = false) {
     if (!is_bool($force)) {
       throw new Exception('Illegal type argument force');
     }
@@ -127,7 +120,12 @@ class Version2age {
       $this->last_check = time();
       return;
     }
-    $this->UseLocalData();
+    #----------------------------------
+    if (file_exists($this->CacheFile)) {
+      $temp = json_decode(file_get_contents($this->CacheFile), true);
+      $this->data       = $temp['data'];
+      $this->released   = $temp['released'];
+    }
     #----------------------------------
     if (empty($this->CAbundle)) {
       throw new Exception('Property CAbundle cannot be empty');
@@ -184,18 +182,11 @@ class Version2age {
 
   #==================================================================
 
-  private function Str2lower($str) {
-    $str = strtolower($str);
-    return str_replace(' ', '_', $str);
-  }
-
-  #==================================================================
-
   public function GetAge($name, $ver) {
 
     $this->Initialise();
 
-    $name = $this->Str2lower($name);
+    $name = $this->strlower($name);
 
     $alias = array(
       'mobile_safari' => 'safari',
@@ -280,67 +271,10 @@ class Version2age {
   #===================================================================
 
   /**
-   * Returns data on specific software.
-   * @param  string $br
-   * @return array
-   */
-  private function GetInfo($name) {
-    $name = $this->strlower($name);
-    if ($this->FetchRemoteData) {
-      if ($name == 'chrome') {
-        return self::getLatestVersionChrome();
-      }
-      elseif ($name == 'crios') {
-        return self::getLatestVersionChrome();
-      }
-      elseif ($name == 'firefox') {
-        return self::getLatestVersionFirefox();
-      }
-    }
-    if (array_key_exists($name, $this->data)) {
-      return array(
-        'version'    => $this->data[$name],
-        'released'   => $this->released,
-        'last_check' => $this->last_check,
-      );
-    }
-    return array();
-  }
-
-  #===================================================================
-
-  /**
    *
    *
    */
-  public function getCurrentVer($name) {
-    $name = $this->strlower($name);
-    if ($name == '') {
-      return '';
-    }
-    if (!array_key_exists($name, $this->data)) {
-      return '';
-    }
-    return $this->data[$os]; # need to get the largest
-  }
-
-  #===================================================================
-
-  /**
-   *
-   *
-   */
-  public function isOutdated($ver, $name) {
-    $name = $this->strlower($name);
-  }
-
-  #===================================================================
-
-  /**
-   *
-   *
-   */
-  public function getLatestVersionChrome() {
+  private function getLatestVersionChrome() {
     $this->curlm->ForcedCacheMaxAge = -1;
     $answer = $this->curlm->Request(self::URLB); # CSV file
     $body   = $answer['body'];
@@ -377,7 +311,7 @@ class Version2age {
    *
    *
    */
-  public function getLatestVersionFirefox() {
+  private function getLatestVersionFirefox() {
     $all = $this->getAllVersionsFirefox();
     $version = end($all);
     $epoch = $this->getEpochFirefoxVersion($version);
@@ -401,7 +335,7 @@ class Version2age {
     $status = $answer['status'];
     unset($answer);
     if ($status == '200') {
-      $body = self::StripHtmlTags($body);
+      $body = $this->StripHtmlTags($body);
       $body = str_replace("\r\n", "\n", $body);
       $body = str_replace("\r", "\n", $body);
       $body = preg_replace("/\n\n+/", "\n", $body);
@@ -431,7 +365,7 @@ class Version2age {
     unset($answer);
     if ($status == '200') {
       $new = array();
-      $body = self::StripHtmlTags($body);
+      $body = $this->StripHtmlTags($body);
       $body = str_replace("\r", "\n", $body);
       $body = preg_replace("/\n\n+/", "\n", $body);
       $body = explode("\n", $body);
@@ -452,7 +386,7 @@ class Version2age {
    *
    *
    */
-  private static function strlower($str) {
+  private function strlower($str) {
     return str_replace(' ', '_', strtolower($str));
   }
 
@@ -462,10 +396,10 @@ class Version2age {
    *
    *
    */
-  private static function StripHtmlTags($str) {
+  private function StripHtmlTags($str) {
     $str = html_entity_decode($str);
     $str = str_replace('<BODY>', '<body>', $str);
-    $str = self::EndExplode('<body>', $str);
+    $str = $this->EndExplode('<body>', $str);
     # Strip HTML
     $str = preg_replace('#<br[^>]*?>#siu',                  "\n", $str);
     $str = preg_replace('#<style[^>]*?>.*?</style>#siu',      '', $str);
@@ -490,7 +424,7 @@ class Version2age {
    *
    *
    */
-  private static function EndExplode($glue, $str) {
+  private function EndExplode($glue, $str) {
     if (strpos($str, $glue) === false) {
       return $str;
     }
