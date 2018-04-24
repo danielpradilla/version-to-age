@@ -126,6 +126,9 @@ class Version2age {
       $this->data       = $temp['data'];
       $this->released   = $temp['released'];
     }
+    else {
+      $this->UseLocalData();
+    }
     #----------------------------------
     if (empty($this->CAbundle)) {
       throw new Exception('Property CAbundle cannot be empty');
@@ -139,11 +142,29 @@ class Version2age {
     # Latest browser data
     $temp = $this->getLatestVersionChrome();
     if (!empty($temp)) {
-      $this->data['chrome'][$temp['version']] = $temp['released'];
+      $ver = $temp['version'];
+      $arr = explode('.', $ver);
+      $new = array();
+      for ($n = 0; $n < 2; $n++) {
+        $new[] = $arr[$n];
+      }
+      $ver = implode('.', $new);
+      if (!isset($this->data['chrome'][$ver])) {
+        $this->data['chrome'][$ver] = $temp['released'];
+      }
     }
     $temp = $this->getLatestVersionFirefox();
     if (!empty($temp)) {
-      $this->data['firefox'][$temp['version']] = $temp['released'];
+      $ver = $temp['version'];
+      $arr = explode('.', $ver);
+      $new = array();
+      for ($n = 0; $n < 2; $n++) {
+        $new[] = $arr[$n];
+      }
+      $ver = implode('.', $new);
+      if (!isset($this->data['firefox'][$ver])) {
+        $this->data['firefox'][$ver] = $temp['released'];
+      }
     }
     $this->SaveData();
   }
