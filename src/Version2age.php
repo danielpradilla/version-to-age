@@ -101,7 +101,6 @@ class Version2age {
     if (!is_bool($force)) {
       throw new Exception('Illegal type argument force');
     }
-    $this->force = $force;
     if (!$this->FetchRemoteData) {
       $this->UseLocalData();
       return;
