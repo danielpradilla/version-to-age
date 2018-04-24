@@ -9,6 +9,8 @@ use peterkahl\Version2age\Version2age;
 $v2a = new Version2age;
 
 # Location of CA certificate file
+# You may download and install on your server this Mozilla CA bundle
+# from this page: <https://curl.haxx.se/docs/caextract.html>
 $v2a->CAbundle = '/srv/certs/ca-bundle.pem';
 
 # Location of your cache directory

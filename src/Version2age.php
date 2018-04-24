@@ -184,11 +184,27 @@ class Version2age {
 
   #==================================================================
 
+  private function Str2lower($str) {
+    $str = strtolower($str);
+    return str_replace(' ', '_', $str);
+  }
+
+  #==================================================================
+
   public function GetAge($name, $ver) {
 
     $this->Initialise();
 
-    $name = strtolower($name);
+    $name = $this->Str2lower($name);
+
+    $alias = array(
+      'mobile_safari' => 'safari',
+      'crios'         => 'chrome',
+    );
+
+    if (array_key_exists($name, $alias)) {
+      $name = $alias[$name];
+    }
 
     if (array_key_exists($ver, $this->data[$name])) {
       return time() - $this->data[$name][$ver];
