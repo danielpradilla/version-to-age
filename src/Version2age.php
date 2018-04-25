@@ -35,16 +35,22 @@ class Version2age {
   const FILEPREFIX = 'VER2AGE_';
 
   /**
-   * URL to fetch latest data on Chrome
+   * Filename prefix for cache files.
    * @var string
    */
-  const URLB = 'http://omahaproxy.appspot.com/all';
+  const USERAGENT = 'Mozilla/5.0 (Version2age; +https://github.com/peterkahl/Version2age)';
 
   /**
    * URL to fetch latest data on Firefox
    * @var string
    */
-  const URLC = 'https://ftp.mozilla.org/pub/firefox/releases/';
+  const URLA = 'https://ftp.mozilla.org/pub/firefox/releases/';
+
+  /**
+   * URL to fetch latest data on Chrome
+   * @var string
+   */
+  const URLB = 'http://omahaproxy.appspot.com/all';
 
   /**
    * Path of cache directory.
@@ -134,9 +140,6 @@ class Version2age {
     }
     #----------------------------------
     $this->last_check = time();
-    $this->curlm = new curlMaster;
-    $this->curlm->ca_file  = $this->CAbundle;
-    $this->curlm->CacheDir = $this->CacheDir;
     #----------------------------------
     # Latest browser data
     $temp = $this->getLatestVersionChrome();
@@ -301,6 +304,10 @@ class Version2age {
    *
    */
   private function getLatestVersionChrome() {
+    $this->curlm = new curlMaster;
+    $this->curlm->ca_file   = $this->CAbundle;
+    $this->curlm->CacheDir  = $this->CacheDir;
+    $this->curlm->useragent = self::USERAGENT;
     $this->curlm->ForcedCacheMaxAge = -1;
     $answer = $this->curlm->Request(self::URLB); # CSV file
     $body   = $answer['body'];
@@ -355,8 +362,12 @@ class Version2age {
    */
   public function getAllVersionsFirefox() {
     $new = array();
+    $this->curlm = new curlMaster;
+    $this->curlm->ca_file   = $this->CAbundle;
+    $this->curlm->CacheDir  = $this->CacheDir;
+    $this->curlm->useragent = self::USERAGENT;
     $this->curlm->ForcedCacheMaxAge = -1;
-    $answer = $this->curlm->Request(self::URLC);
+    $answer = $this->curlm->Request(self::URLA);
     $body   = $answer['body'];
     $status = $answer['status'];
     unset($answer);
@@ -384,8 +395,12 @@ class Version2age {
    * @return integer
    */
   public function getEpochFirefoxVersion($ver) {
+    $this->curlm = new curlMaster;
+    $this->curlm->ca_file   = $this->CAbundle;
+    $this->curlm->CacheDir  = $this->CacheDir;
+    $this->curlm->useragent = self::USERAGENT;
     $this->curlm->ForcedCacheMaxAge = -1;
-    $answer = $this->curlm->Request(self::URLC . $ver .'/');
+    $answer = $this->curlm->Request(self::URLA . $ver .'/');
     $body   = $answer['body'];
     $status = $answer['status'];
     unset($answer);
