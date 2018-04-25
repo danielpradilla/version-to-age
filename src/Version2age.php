@@ -3,7 +3,7 @@
  * Version To Age
  * Estimates age of browser and OS software.
  *
- * @version    2018-04-24 18:15:00 GMT
+ * @version    2018-04-25 12:25:00 GMT
  * @author     Peter Kahl <https://github.com/peterkahl>
  * @copyright  2018 Peter Kahl
  * @license    Apache License, Version 2.0
@@ -285,6 +285,7 @@ class Version2age {
       'windows'   =>  5,
       'seamonkey' => 55,
       'lunascape' => 20,
+      'firefox'   => 11,
     );
     $scale = 10;
     if (array_key_exists($name, $arnm)) {
