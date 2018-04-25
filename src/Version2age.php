@@ -3,7 +3,7 @@
  * Version To Age
  * Estimates age of browser and OS software.
  *
- * @version    2018-04-24 16:45:00 GMT
+ * @version    2018-04-24 18:15:00 GMT
  * @author     Peter Kahl <https://github.com/peterkahl>
  * @copyright  2018 Peter Kahl
  * @license    Apache License, Version 2.0
@@ -200,11 +200,13 @@ class Version2age {
     throw new Exception('No data files found');
   }
 
-  #==================================================================
+  #===================================================================
 
   public function GetAge($name, $ver) {
 
-    $this->Initialise();
+    if (empty($this->data)) {
+      $this->Initialise();
+    }
 
     $name = $this->strlower($name);
 
@@ -215,6 +217,10 @@ class Version2age {
 
     if (array_key_exists($name, $alias)) {
       $name = $alias[$name];
+    }
+
+    if (!array_key_exists($name, $this->data)) {
+      return 'UNKNOWN'; # The software name does not exist in our database.
     }
 
     if (array_key_exists($ver, $this->data[$name])) {
