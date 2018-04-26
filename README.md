@@ -26,6 +26,7 @@ Browsers:
 Operating Systems:
 * android
 * ios
+* macos
 * windows
 
 ### Usage
