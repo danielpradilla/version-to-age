@@ -44,7 +44,8 @@ $v2a->CacheDir = '/srv/cache';
 
 # Perhaps you have user agent string like this
 # $user_agent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_3 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) CriOS/65.0.3325.152 Mobile/15E5216a Safari/604.1';
-# So you'll use a parser (not this library) to get this
+# I have used this parser at <https://github.com/peterkahl/user-agent-parser>
+# to parse the above string down to
 $os_name = 'iOS'; # case insensitive
 $os_vers = '11.3';
 
