@@ -2,6 +2,8 @@
 
 Software age gauge. Estimates age of browser and OS software. The script stores an associative array of software names and version and timestamp pairs. It also periodically connects to external servers to fetch the latest information on Firefox and Chrome browsers.
 
+![image](https://github.com/peterkahl/version-to-age/blob/master/screen-shot.png "Screenshot of user agent and age of software.")
+
 ### Usage
 ```php
 use peterkahl\Version2age\Version2age;
