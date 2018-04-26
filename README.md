@@ -4,6 +4,30 @@ Software age gauge. Estimates age of browser and OS software. The script stores 
 
 ![image](https://github.com/peterkahl/version-to-age/blob/master/screen-shot.png "Screenshot of user agent and age of software.")
 
+### Limitations
+
+This script knows only that which is stored in its data array.
+
+Browsers:
+* chrome
+* crios
+* edge
+* explorer
+* firefox
+* lunascape
+* maxthon
+* safari
+* mobile safari
+* netsurf
+* opera
+* samsungbrowser
+* seamonkey
+
+Operating Systems:
+* android
+* ios
+* windows
+
 ### Usage
 ```php
 use peterkahl\Version2age\Version2age;
@@ -21,14 +45,17 @@ $v2a->CacheDir = '/srv/cache';
 # Perhaps you have user agent string like this
 # $user_agent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_3 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) CriOS/65.0.3325.152 Mobile/15E5216a Safari/604.1';
 # So you'll use a parser (not this library) to get this
-$os_name = 'iOS';
+$os_name = 'iOS'; # case insensitive
 $os_vers = '11.3';
 
 $age = $v2a->GetAge($os_name, $os_vers);
 $age = $age/31536000; # years
 
-if ($age >= 1) {
-  echo 'You will be subjected to scrutiny.';
+if (is_string($age) && $age == 'UNKNOWN') {
+  echo 'I\'m sorry. I don\'t know this software.'
+}
+elseif ($age >= 1) {
+  echo 'Your software is 1 year old or older.';
 }
 
 ```
