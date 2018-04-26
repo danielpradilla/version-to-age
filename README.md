@@ -1,6 +1,6 @@
 # Version To Age
 
-Estimates age of browser and OS software.
+Software age gauge. Estimates age of browser and OS software. The script stores an associative array of software names and version and timestamp pairs. It also periodically connects to external servers to fetch the latest information on Firefox and Chrome browsers.
 
 ### Usage
 ```php
@@ -32,7 +32,7 @@ if ($age >= 1) {
 ```
 
 ### Crontab Job to keep up-to-date
-Run the script below every 6 hours.
+Run the script below every 6 hours. This forces connection to external servers in order to fetch the most up-to-date data on Firefox and Chrome browsers.
 ```php
 use peterkahl\Version2age\Version2age;
 
