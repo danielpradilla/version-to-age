@@ -2,19 +2,18 @@
     "name": "peterkahl/version-to-age",
     "type": "library",
     "description": "Estimates age of browser and OS software.",
-    "keywords": ["user-agent-parser", "user-agent-string", "software-age"],
+    "keywords": ["estimates-age", "software-age", "user-agent-analysis"],
     "homepage": "https://github.com/peterkahl/version-to-age",
     "license": "Apache-2.0",
     "authors": [
         {
             "name": "Peter Kahl",
-            "email": "peter.kahl@colossalmind.com",
-            "homepage": "https://www.colossalmind.com/",
             "role": "Developer"
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.0",
+        "peterkahl/curl-master": "*"
     },
     "autoload": {
         "psr-4": {
