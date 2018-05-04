@@ -3,7 +3,7 @@
  * Version To Age
  * Estimates age of browser and OS software.
  *
- * @version    2018-05-04 06:13:00 GMT
+ * @version    2018-05-04 08:51:00 GMT
  * @author     Peter Kahl <https://github.com/peterkahl>
  * @copyright  2018 Peter Kahl
  * @license    Apache License, Version 2.0
@@ -119,15 +119,39 @@ class Version2age {
     # Local cache
     $this->CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
     if (!$force && file_exists($this->CacheFile) && filemtime($this->CacheFile) > time()-86400) {
+      # Local cache
       $temp = json_decode(file_get_contents($this->CacheFile), true);
+      # Local file provided with this library
+      $LocalFile = __DIR__ .'/data.json';
+      if (file_exists($LocalFile)) {
+        $tempL = json_decode(file_get_contents($LocalFile), true);
+      }
+      if ($tempL['released'] > $temp['released']) {
+        # Local file is newer than cache file. Local file will be used.
+        $temp = $tempL;
+        # Save in cache
+      }
       $this->data       = $temp['data'];
       $this->released   = $temp['released'];
       $this->last_check = time();
+      $this->SaveData();
       return;
     }
     #----------------------------------
     if (file_exists($this->CacheFile)) {
+      # Local cache
       $temp = json_decode(file_get_contents($this->CacheFile), true);
+      # Local file provided with this library
+      $LocalFile = __DIR__ .'/data.json';
+      if (file_exists($LocalFile)) {
+        $tempL = json_decode(file_get_contents($LocalFile), true);
+      }
+      if ($tempL['released'] > $temp) {
+        # Local file is newer than cache file. Local file will be used.
+        $temp = $tempL;
+        # Save in cache
+        $this->SaveData();
+      }
       $this->data       = $temp['data'];
       $this->released   = $temp['released'];
     }
