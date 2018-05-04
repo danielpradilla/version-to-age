@@ -3,7 +3,7 @@
  * Version To Age
  * Estimates age of browser and OS software.
  *
- * @version    2018-05-04 08:51:00 GMT
+ * @version    2018-05-04 18:03:00 GMT
  * @author     Peter Kahl <https://github.com/peterkahl>
  * @copyright  2018 Peter Kahl
  * @license    Apache License, Version 2.0
@@ -146,7 +146,7 @@ class Version2age {
       if (file_exists($LocalFile)) {
         $tempL = json_decode(file_get_contents($LocalFile), true);
       }
-      if ($tempL['released'] > $temp) {
+      if ($tempL['released'] > $temp['released']) {
         # Local file is newer than cache file. Local file will be used.
         $temp = $tempL;
         # Save in cache
