@@ -3,7 +3,7 @@
  * Version To Age
  * Estimates age of browser and OS software.
  *
- * @version    2018-04-25 12:25:00 GMT
+ * @version    2018-05-04 06:13:00 GMT
  * @author     Peter Kahl <https://github.com/peterkahl>
  * @copyright  2018 Peter Kahl
  * @license    Apache License, Version 2.0
@@ -226,6 +226,10 @@ class Version2age {
       return 'UNKNOWN'; # The software name does not exist in our database.
     }
 
+    if ($name == 'edge') {
+      $ver = $this->EndExplode('.', $ver);
+    }
+
     if (array_key_exists($ver, $this->data[$name])) {
       return time() - $this->data[$name][$ver];
     }
@@ -276,6 +280,9 @@ class Version2age {
   #===================================================================
 
   private function Str2float($str, $name) {
+    if ($name == 'edge') {
+      return (float) $str;
+    }
     if (substr_count($str, '.') < 1) {
       $str .= '.0';
     }
@@ -292,9 +299,6 @@ class Version2age {
       $scale = $arnm[$name];
     }
     $arr = explode('.', $str);
-    if ($name == 'edge') {
-      return $arr[1];
-    }
     return (float) $arr[0] + $arr[1]/$scale;
   }
 
