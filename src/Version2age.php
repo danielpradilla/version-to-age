@@ -3,7 +3,7 @@
  * Version To Age
  * Estimates age of browser and OS software.
  *
- * @version    2018-05-04 18:03:00 GMT
+ * @version    2018-05-06 04:29:00 GMT
  * @author     Peter Kahl <https://github.com/peterkahl>
  * @copyright  2018 Peter Kahl
  * @license    Apache License, Version 2.0
@@ -98,74 +98,58 @@ class Version2age {
    * Data array is created from local and remote sources.
    * Data array is updated if outdated.
    * Data are stored in cache.
-   * @param  boolean $force ... Disables reading of cache, thus forcing
-   *                            new requests to remote hosts to fetch
-   *                            fresh data.
+   * @param  boolean $force ... Forces instant requests to remote hosts to fetch
+   *                            fresh values.
    * @throws \Exception
    */
   public function Initialise($force = false) {
+
     if (!is_bool($force)) {
       throw new Exception('Illegal type argument force');
     }
+
+    $this->LoadDefaultData();
+
     if (!$this->FetchRemoteData) {
-      $this->UseLocalData();
+      # This is for applications when internet connection is not available/desired.
       return;
     }
-    #----------------------------------
+
     if (empty($this->CacheDir)) {
       throw new Exception('Property CacheDir cannot be empty');
     }
-    #----------------------------------
-    # Local cache
+
+    # Local cache file
     $this->CacheFile = $this->CacheDir .'/'. self::FILEPREFIX .'data.json';
+
     if (!$force && file_exists($this->CacheFile) && filemtime($this->CacheFile) > time()-86400) {
-      # Local cache
-      $temp = json_decode(file_get_contents($this->CacheFile), true);
-      # Local file provided with this library
-      $LocalFile = __DIR__ .'/data.json';
-      if (file_exists($LocalFile)) {
-        $tempL = json_decode(file_get_contents($LocalFile), true);
+      # This is normal mode of operation, especially when crontab
+      # job is properly set up, that's once every 6-23 hours.
+
+      # Read from local cache
+      $cache = json_decode(file_get_contents($this->CacheFile), true);
+
+      # Is the cache file outdated (cache file has older time stamp than local file)?
+      # Must check which- local file OR local cache file
+      # has newer values (timestamp)
+      if ($cache['released'] >= $this->released) {
+        # Cache file is newer than the local file.
+        # The cache file is good.
+        $this->data     = $cache['data'];
+        $this->released = $cache['released'];
+        return;
       }
-      if ($tempL['released'] > $temp['released']) {
-        # Local file is newer than cache file. Local file will be used.
-        $temp = $tempL;
-        # Save in cache
-      }
-      $this->data       = $temp['data'];
-      $this->released   = $temp['released'];
-      $this->last_check = time();
-      $this->SaveData();
-      return;
     }
-    #----------------------------------
-    if (file_exists($this->CacheFile)) {
-      # Local cache
-      $temp = json_decode(file_get_contents($this->CacheFile), true);
-      # Local file provided with this library
-      $LocalFile = __DIR__ .'/data.json';
-      if (file_exists($LocalFile)) {
-        $tempL = json_decode(file_get_contents($LocalFile), true);
-      }
-      if ($tempL['released'] > $temp['released']) {
-        # Local file is newer than cache file. Local file will be used.
-        $temp = $tempL;
-        # Save in cache
-        $this->SaveData();
-      }
-      $this->data       = $temp['data'];
-      $this->released   = $temp['released'];
-    }
-    else {
-      $this->UseLocalData();
-    }
-    #----------------------------------
+
+    # Now, either force==true (crontab job) OR cache file is outdated/non-existent.
+    # Ideally, this should always be case ONLY for crontab job.
+
+    # Prepare for connection to the outer world.
     if (empty($this->CAbundle)) {
       throw new Exception('Property CAbundle cannot be empty');
     }
-    #----------------------------------
-    $this->last_check = time();
-    #----------------------------------
-    # Latest browser data
+
+    # Fetch latest Chrome version string and timestamp
     $temp = $this->getLatestVersionChrome();
     if (!empty($temp)) {
       $ver = $temp['version'];
@@ -176,9 +160,12 @@ class Version2age {
       }
       $ver = implode('.', $new);
       if (!isset($this->data['chrome'][$ver])) {
+        # Write the value into data
         $this->data['chrome'][$ver] = $temp['released'];
       }
     }
+
+    # Fetch latest Firefox version string and timestamp
     $temp = $this->getLatestVersionFirefox();
     if (!empty($temp)) {
       $ver = $temp['version'];
@@ -192,6 +179,9 @@ class Version2age {
         $this->data['firefox'][$ver] = $temp['released'];
       }
     }
+
+    $this->last_check = time();
+
     $this->SaveData();
   }
 
@@ -215,16 +205,15 @@ class Version2age {
    * Loads data from local file.
    * @throws \Exception
    */
-  private function UseLocalData() {
+  private function LoadDefaultData() {
     $LocalFile = __DIR__ .'/data.json';
     if (file_exists($LocalFile)) {
       $temp = json_decode(file_get_contents($LocalFile), true);
-      $this->data       = $temp['data'];
-      $this->released   = $temp['released'];
-      $this->last_check = $temp['released'];;
+      $this->data     = $temp['data'];
+      $this->released = $temp['released'];
       return;
     }
-    throw new Exception('No data files found');
+    throw new Exception('Cannot read/find file '. $LocalFile);
   }
 
   #===================================================================
