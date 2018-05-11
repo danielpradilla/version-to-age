@@ -3,7 +3,7 @@
  * Version To Age
  * Estimates age of browser and OS software.
  *
- * @version    2018-05-06 04:29:00 GMT
+ * @version    2018-05-11 16:36:00 GMT
  * @author     Peter Kahl <https://github.com/peterkahl>
  * @copyright  2018 Peter Kahl
  * @license    Apache License, Version 2.0
@@ -162,6 +162,7 @@ class Version2age {
       if (!isset($this->data['chrome'][$ver])) {
         # Write the value into data
         $this->data['chrome'][$ver] = $temp['released'];
+        $this->released = time();
       }
     }
 
@@ -176,7 +177,9 @@ class Version2age {
       }
       $ver = implode('.', $new);
       if (!isset($this->data['firefox'][$ver])) {
+        # Write the value into data
         $this->data['firefox'][$ver] = $temp['released'];
+        $this->released = time();
       }
     }
 
@@ -327,7 +330,7 @@ class Version2age {
     $this->curlm->CacheDir  = $this->CacheDir;
     $this->curlm->useragent = self::USERAGENT;
     $this->curlm->ForcedCacheMaxAge = -1;
-    $answer = $this->curlm->Request(self::URLB); # CSV file
+    $answer = $this->curlm->Request(self::URLB, 'GET', $data = array(), true); # CSV file
     $body   = $answer['body'];
     $status = $answer['status'];
     unset($answer);
@@ -385,7 +388,7 @@ class Version2age {
     $this->curlm->CacheDir  = $this->CacheDir;
     $this->curlm->useragent = self::USERAGENT;
     $this->curlm->ForcedCacheMaxAge = -1;
-    $answer = $this->curlm->Request(self::URLA);
+    $answer = $this->curlm->Request(self::URLA, 'GET', $data = array(), true);
     $body   = $answer['body'];
     $status = $answer['status'];
     unset($answer);
@@ -418,7 +421,7 @@ class Version2age {
     $this->curlm->CacheDir  = $this->CacheDir;
     $this->curlm->useragent = self::USERAGENT;
     $this->curlm->ForcedCacheMaxAge = -1;
-    $answer = $this->curlm->Request(self::URLA . $ver .'/');
+    $answer = $this->curlm->Request(self::URLA . $ver .'/', 'GET', $data = array(), true);
     $body   = $answer['body'];
     $status = $answer['status'];
     unset($answer);
