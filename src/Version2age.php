@@ -297,7 +297,7 @@ class Version2age {
 
   private function Str2float($str, $name) {
     if ($name == 'edge') {
-      return (float) $str;
+      return (integer) $str;
     }
     if (substr_count($str, '.') < 1) {
       $str .= '.0';
