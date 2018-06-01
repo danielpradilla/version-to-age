@@ -1,13 +1,14 @@
 {
     "name": "peterkahl/version-to-age",
     "type": "library",
-    "description": "Estimates age of browser and OS software.",
+    "description": "Estimates age of browser and OS software by using values parsed from User Agent string.",
     "keywords": ["estimates-age", "software-age", "user-agent-analysis"],
     "homepage": "https://github.com/peterkahl/version-to-age",
     "license": "Apache-2.0",
     "authors": [
         {
             "name": "Peter Kahl",
+            "homepage": "https://www.cidrcalculator.com/",
             "role": "Developer"
         }
     ],
