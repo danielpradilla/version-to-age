@@ -3,7 +3,7 @@
     "homepage": "https:\/\/github.com\/peterkahl\/Version2age",
     "copyright": "Peter Kahl",
     "license": "Apache-2.0",
-    "released": 1527640142,
+    "released": 1530016144,
     "data": {
         "chrome": {
             "0.2": 1220313600,
@@ -134,7 +134,8 @@
             "57.0": 1510569600,
             "58.0": 1516371960,
             "59.0": 1520894220,
-            "60.0": 1525796700
+            "60.0": 1525796700,
+            "61.0": 1529948220
         },
         "lunascape": {
             "6.1": 1270080000,
