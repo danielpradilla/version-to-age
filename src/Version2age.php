@@ -3,7 +3,7 @@
  * Version To Age
  * Estimates age of browser and OS software.
  *
- * @version    2018-05-11 16:36:00 GMT
+ * @version    2019-01-16 05:47:00 UTC
  * @author     Peter Kahl <https://github.com/peterkahl>
  * @copyright  2018 Peter Kahl
  * @license    Apache License, Version 2.0
@@ -65,6 +65,12 @@ class Version2age {
   public $CAbundle;
 
   /**
+   * Cipher string for cURL (optional)
+   * @var string ... example 'AESGCM:!PSK'
+   */
+  public $CipherString = '';
+
+  /**
    * Enable fetching data from remote hosts.
    * If true, data is fetched remotely and
    * stored in cache.
@@ -92,7 +98,6 @@ class Version2age {
    */
   private $last_check;
 
-  #===================================================================
 
   /**
    * Data array is created from local and remote sources.
@@ -168,7 +173,7 @@ class Version2age {
 
     # Fetch latest Firefox version string and timestamp
     $temp = $this->getLatestVersionFirefox();
-    if (!empty($temp)) {
+    if (!empty($temp) && strpos($temp['version'], '.') != false) {
       $ver = $temp['version'];
       $arr = explode('.', $ver);
       $new = array();
@@ -188,7 +193,6 @@ class Version2age {
     $this->SaveData();
   }
 
-  #===================================================================
 
   private function SaveData() {
     $temp = array(
@@ -202,7 +206,6 @@ class Version2age {
     file_put_contents($this->CacheFile, json_encode($temp, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
   }
 
-  #===================================================================
 
   /**
    * Loads data from local file.
@@ -219,7 +222,6 @@ class Version2age {
     throw new Exception('Cannot read/find file '. $LocalFile);
   }
 
-  #===================================================================
 
   public function GetAge($name, $ver) {
 
@@ -227,39 +229,43 @@ class Version2age {
       $this->Initialise();
     }
 
-    $name = $this->strlower($name);
+    $lcnam = $this->strlower($name);
 
     $alias = array(
       'mobile_safari' => 'safari',
       'crios'         => 'chrome',
     );
 
-    if (array_key_exists($name, $alias)) {
-      $name = $alias[$name];
+    if (array_key_exists($lcnam, $alias)) {
+      $lcnam = $alias[$lcnam];
     }
 
-    if (!array_key_exists($name, $this->data)) {
+    if (!array_key_exists($lcnam, $this->data)) {
       return 'UNKNOWN'; # The software name does not exist in our database.
     }
 
-    if ($name == 'edge') {
+    if ($lcnam == 'edge') {
       $ver = $this->EndExplode('.', $ver);
     }
 
-    if (array_key_exists($ver, $this->data[$name])) {
-      return time() - $this->data[$name][$ver];
+    # Strip away non-numeric
+    $ver = preg_replace('/[a-z]/i', ' ', $ver);
+    $ver = $this->EndExplode(' ', $ver);
+
+    if (array_key_exists($ver, $this->data[$lcnam])) {
+      return time() - $this->data[$lcnam][$ver];
     }
     if (substr_count($ver, '.') > 1) {
       $arr = explode('.', $ver);
       $ver = $arr[0] .'.'. $arr[1];
-      if (array_key_exists($ver, $this->data[$name])) {
-        return time() - $this->data[$name][$ver];
+      if (array_key_exists($ver, $this->data[$lcnam])) {
+        return time() - $this->data[$lcnam][$ver];
       }
     }
-    $temp = $this->data[$name];
-    $verNorm = $this->Str2float($ver, $name);
+    $temp = $this->data[$lcnam];
+    $verNorm = $this->Str2float($ver, $lcnam);
     foreach ($temp as $str => $time) {
-      $val = $this->Str2float($str, $name);
+      $val = $this->Str2float($str, $lcnam);
       # We are comparing floats!
       if ($val < $verNorm) {
         $low = array('time'=>$time, 'val'=>$val);
@@ -269,11 +275,11 @@ class Version2age {
         break;
       }
     }
-    #----
+
     if (empty($high) || empty($low)) {
       return 0;
     }
-    #----
+
     $timeSpan = $high['time'] - $low['time'];
     $incrt = (integer) $timeSpan/20;
     $time  = $low['time'];
@@ -293,7 +299,6 @@ class Version2age {
     return time() - $epoch;
   }
 
-  #===================================================================
 
   private function Str2float($str, $name) {
     if ($name == 'edge') {
@@ -318,10 +323,9 @@ class Version2age {
     return (float) $arr[0] + $arr[1]/$scale;
   }
 
-  #===================================================================
 
   /**
-   *
+   * Fetches the latest version (string) of Chrome stable version.
    *
    */
   private function getLatestVersionChrome() {
@@ -329,6 +333,7 @@ class Version2age {
     $this->curlm->ca_file   = $this->CAbundle;
     $this->curlm->CacheDir  = $this->CacheDir;
     $this->curlm->useragent = self::USERAGENT;
+    $this->curlm->CipherString = $this->CipherString;
     $this->curlm->ForcedCacheMaxAge = -1;
     $answer = $this->curlm->Request(self::URLB, 'GET', $data = array(), true); # CSV file
     $body   = $answer['body'];
@@ -359,7 +364,6 @@ class Version2age {
     return array();
   }
 
-  #===================================================================
 
   /**
    *
@@ -375,7 +379,6 @@ class Version2age {
     );
   }
 
-  #===================================================================
 
   /**
    *
@@ -387,6 +390,7 @@ class Version2age {
     $this->curlm->ca_file   = $this->CAbundle;
     $this->curlm->CacheDir  = $this->CacheDir;
     $this->curlm->useragent = self::USERAGENT;
+    $this->curlm->CipherString = $this->CipherString;
     $this->curlm->ForcedCacheMaxAge = -1;
     $answer = $this->curlm->Request(self::URLA, 'GET', $data = array(), true);
     $body   = $answer['body'];
@@ -408,7 +412,6 @@ class Version2age {
     return $new;
   }
 
-  #===================================================================
 
   /**
    * Returns release date (epoch) for given Firefox version.
@@ -420,6 +423,7 @@ class Version2age {
     $this->curlm->ca_file   = $this->CAbundle;
     $this->curlm->CacheDir  = $this->CacheDir;
     $this->curlm->useragent = self::USERAGENT;
+    $this->curlm->CipherString = $this->CipherString;
     $this->curlm->ForcedCacheMaxAge = -1;
     $answer = $this->curlm->Request(self::URLA . $ver .'/', 'GET', $data = array(), true);
     $body   = $answer['body'];
@@ -442,7 +446,6 @@ class Version2age {
     return '';
   }
 
-  #===================================================================
 
   /**
    *
@@ -452,7 +455,6 @@ class Version2age {
     return str_replace(' ', '_', strtolower($str));
   }
 
-  #===================================================================
 
   /**
    *
@@ -480,7 +482,6 @@ class Version2age {
     return trim($str);
   }
 
-  #===================================================================
 
   /**
    *
@@ -494,5 +495,5 @@ class Version2age {
     return end($str);
   }
 
-  #===================================================================
+
 }
