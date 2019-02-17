@@ -3,9 +3,9 @@
  * Version To Age
  * Estimates age of browser and OS software.
  *
- * @version    2019-01-16 05:47:00 UTC
+ * @version    2019-02-17 06:31:00 UTC
  * @author     Peter Kahl <https://github.com/peterkahl>
- * @copyright  2018 Peter Kahl
+ * @copyright  2018-2019 Peter Kahl
  * @license    Apache License, Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -149,11 +149,6 @@ class Version2age {
     # Now, either force==true (crontab job) OR cache file is outdated/non-existent.
     # Ideally, this should always be case ONLY for crontab job.
 
-    # Prepare for connection to the outer world.
-    if (empty($this->CAbundle)) {
-      throw new Exception('Property CAbundle cannot be empty');
-    }
-
     # Fetch latest Chrome version string and timestamp
     $temp = $this->getLatestVersionChrome();
     if (!empty($temp)) {
@@ -194,8 +189,13 @@ class Version2age {
   }
 
 
+  /**
+   * Saves data file in JSON format.
+   *
+   */
   private function SaveData() {
-    $temp = array(
+
+    $data = array(
       'description' => 'Estimates age of browser and OS software.',
       'homepage'    => 'https://github.com/peterkahl/Version2age',
       'copyright'   => 'Peter Kahl',
@@ -203,7 +203,8 @@ class Version2age {
       'released'    => $this->released,
       'data'        => $this->data,
     );
-    file_put_contents($this->CacheFile, json_encode($temp, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
+
+    file_put_contents($this->CacheFile, json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
   }
 
 
@@ -212,17 +213,26 @@ class Version2age {
    * @throws \Exception
    */
   private function LoadDefaultData() {
+
     $LocalFile = __DIR__ .'/data.json';
+
     if (file_exists($LocalFile)) {
       $temp = json_decode(file_get_contents($LocalFile), true);
       $this->data     = $temp['data'];
       $this->released = $temp['released'];
       return;
     }
+
     throw new Exception('Cannot read/find file '. $LocalFile);
   }
 
 
+  /**
+   * Returns age of browser/OS in seconds.
+   * @param  string   $name ... name of browser/OS
+   * @param  string   $ver .... version
+   * @throws \Exception
+   */
   public function GetAge($name, $ver) {
 
     if (empty($this->data)) {
@@ -300,13 +310,22 @@ class Version2age {
   }
 
 
+  /**
+   * Converts string to float or integer (removes subsequent periods).
+   * @param  string   $str ..... version of browser
+   * @param  string   $name .... nickname of browser
+   * @return mixed
+   */
   private function Str2float($str, $name) {
+
     if ($name == 'edge') {
       return (integer) $str;
     }
+
     if (substr_count($str, '.') < 1) {
       $str .= '.0';
     }
+
     $arnm = array(
       'ios'       => 20,
       'macos'     => 20,
@@ -315,31 +334,62 @@ class Version2age {
       'lunascape' => 20,
       'firefox'   => 11,
     );
+
     $scale = 10;
+
     if (array_key_exists($name, $arnm)) {
       $scale = $arnm[$name];
     }
+
     $arr = explode('.', $str);
+
     return (float) $arr[0] + $arr[1]/$scale;
   }
 
 
   /**
-   * Fetches the latest version (string) of Chrome stable version.
-   *
+   * Makes HTTP request to external URL and returns a string.
+   * @return string
+   * @throws \Exception
    */
-  private function getLatestVersionChrome() {
+  private function HTTPRequest($url) {
+
+    if (empty($this->CAbundle)) {
+      throw new Exception('Property CAbundle cannot be empty');
+    }
+
     $this->curlm = new curlMaster;
-    $this->curlm->ca_file   = $this->CAbundle;
-    $this->curlm->CacheDir  = $this->CacheDir;
-    $this->curlm->useragent = self::USERAGENT;
-    $this->curlm->CipherString = $this->CipherString;
+    $this->curlm->ca_file           = $this->CAbundle;
+    $this->curlm->CacheDir          = $this->CacheDir;
+    $this->curlm->useragent         = self::USERAGENT;
+    $this->curlm->CipherString      = $this->CipherString;
     $this->curlm->ForcedCacheMaxAge = -1;
-    $answer = $this->curlm->Request(self::URLB, 'GET', $data = array(), true); # CSV file
+
+    $answer = $this->curlm->Request($url, 'GET', $data = array(), true);
+
     $body   = $answer['body'];
     $status = $answer['status'];
+
     unset($answer);
+
     if ($status == '200') {
+      return $body;
+    }
+
+    return '';
+  }
+
+
+  /**
+   * Makes HTTP request to external URL and returns the latest version of Chrome.
+   * @return array
+   * @throws \Exception
+   */
+  private function getLatestVersionChrome() {
+
+    $body = $this->HTTPRequest(self::URLB);
+
+    if (!empty($body)) {
       $body = str_replace("\r\n", "\n", $body);
       $body = str_replace("\r", "\n", $body);
       $body = preg_replace("/\n\n+/", "\n", $body);
@@ -361,13 +411,15 @@ class Version2age {
         'released' => strtotime('20'. $year .'-'. $month .'-'. $day.' 00:00:00 GMT'),
       );
     }
+
     return array();
   }
 
 
   /**
-   *
-   *
+   * Makes HTTP request to external URL and returns the latest version of Firefox.
+   * @return array
+   * @throws \Exception
    */
   private function getLatestVersionFirefox() {
     $all = $this->getAllVersionsFirefox();
@@ -381,34 +433,30 @@ class Version2age {
 
 
   /**
-   *
-   *
+   * Makes HTTP request to external URL and returns all versions of Firefox.
+   * @return array
+   * @throws \Exception
    */
   public function getAllVersionsFirefox() {
-    $new = array();
-    $this->curlm = new curlMaster;
-    $this->curlm->ca_file   = $this->CAbundle;
-    $this->curlm->CacheDir  = $this->CacheDir;
-    $this->curlm->useragent = self::USERAGENT;
-    $this->curlm->CipherString = $this->CipherString;
-    $this->curlm->ForcedCacheMaxAge = -1;
-    $answer = $this->curlm->Request(self::URLA, 'GET', $data = array(), true);
-    $body   = $answer['body'];
-    $status = $answer['status'];
-    unset($answer);
-    if ($status == '200') {
+
+    $body = $this->HTTPRequest(self::URLA);
+
+    if (!empty($body)) {
+      $new = array();
       $body = $this->StripHtmlTags($body);
-      $body = str_replace("\r\n", "\n", $body);
       $body = str_replace("\r", "\n", $body);
       $body = preg_replace("/\n\n+/", "\n", $body);
       $body = explode("\n", $body);
+
       foreach ($body as $line) {
         if (is_numeric(substr($line, 0, 1)) && !strpos($line, '-') &&  !strpos($line, 'b') &&  !strpos($line, 'esr') &&  !strpos($line, 'plugin') &&  !strpos($line, 'rc')) {
           $new[] = rtrim($line, '/');
         }
       }
+
       natcasesort($new);
     }
+
     return $new;
   }
 
@@ -417,39 +465,37 @@ class Version2age {
    * Returns release date (epoch) for given Firefox version.
    * @param  string $ver
    * @return integer
+   * @throws \Exception
    */
   public function getEpochFirefoxVersion($ver) {
-    $this->curlm = new curlMaster;
-    $this->curlm->ca_file   = $this->CAbundle;
-    $this->curlm->CacheDir  = $this->CacheDir;
-    $this->curlm->useragent = self::USERAGENT;
-    $this->curlm->CipherString = $this->CipherString;
-    $this->curlm->ForcedCacheMaxAge = -1;
-    $answer = $this->curlm->Request(self::URLA . $ver .'/', 'GET', $data = array(), true);
-    $body   = $answer['body'];
-    $status = $answer['status'];
-    unset($answer);
-    if ($status == '200') {
+
+    $body = $this->HTTPRequest(self::URLA);
+
+    if (!empty($body)) {
       $new = array();
       $body = $this->StripHtmlTags($body);
       $body = str_replace("\r", "\n", $body);
       $body = preg_replace("/\n\n+/", "\n", $body);
       $body = explode("\n", $body);
+
       foreach ($body as $line) {
         if (preg_match('/^\d\d?-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d\d\d\d/', $line)) {
           $new[] = $line;
         }
       }
       $latest = end($new);
+
       return strtotime($latest .' GMT');
     }
+
     return '';
   }
 
 
   /**
-   *
-   *
+   * Converts string to lower case and replaces whitespace with '_'.
+   * @param  string   $str
+   * @return string
    */
   private function strlower($str) {
     return str_replace(' ', '_', strtolower($str));
@@ -457,8 +503,9 @@ class Version2age {
 
 
   /**
-   *
-   *
+   * Strips all HTML tags.
+   * @param  string   $str
+   * @return string
    */
   private function StripHtmlTags($str) {
     $str = html_entity_decode($str);
@@ -484,8 +531,9 @@ class Version2age {
 
 
   /**
-   *
-   *
+   * Returns last element of a string after an identifiable glue.
+   * @param  string   $glue  $str
+   * @return string
    */
   private function EndExplode($glue, $str) {
     if (strpos($str, $glue) === false) {
